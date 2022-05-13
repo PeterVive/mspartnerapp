@@ -42,30 +42,44 @@ export default function Sidebar() {
             </ListItemButton>
           </ListItem>
         </Link>
-        <ListItem disablePadding>
-          <ListItemButton disabled={tenant ? false : true}>
-            <ListItemIcon>
-              <Group />
-            </ListItemIcon>
-            <ListItemText primary={"Groups"} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton disabled={tenant ? false : true}>
-            <ListItemIcon>
-              <Mail />
-            </ListItemIcon>
-            <ListItemText primary={"Mailboxes"} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton disabled={tenant ? false : true}>
-            <ListItemIcon>
-              <Language />
-            </ListItemIcon>
-            <ListItemText primary={"Domains"} />
-          </ListItemButton>
-        </ListItem>
+        <Link href="/groups" style={{ textDecoration: "none" }} color="inherit">
+          <ListItem disablePadding>
+            <ListItemButton disabled={tenant ? false : true}>
+              <ListItemIcon>
+                <Group />
+              </ListItemIcon>
+              <ListItemText primary={"Groups"} />
+            </ListItemButton>
+          </ListItem>
+        </Link>
+        <Link
+          href="/mailboxes"
+          style={{ textDecoration: "none" }}
+          color="inherit"
+        >
+          <ListItem disablePadding>
+            <ListItemButton disabled={tenant ? false : true}>
+              <ListItemIcon>
+                <Mail />
+              </ListItemIcon>
+              <ListItemText primary={"Mailboxes"} />
+            </ListItemButton>
+          </ListItem>
+        </Link>
+        <Link
+          href="/domains"
+          style={{ textDecoration: "none" }}
+          color="inherit"
+        >
+          <ListItem disablePadding>
+            <ListItemButton disabled={tenant ? false : true}>
+              <ListItemIcon>
+                <Language />
+              </ListItemIcon>
+              <ListItemText primary={"Domains"} />
+            </ListItemButton>
+          </ListItem>
+        </Link>
       </List>
       <Divider />
     </Drawer>
