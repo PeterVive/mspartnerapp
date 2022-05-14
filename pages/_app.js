@@ -8,16 +8,21 @@ import theme from "../components/Layout/theme";
 import createEmotionCache from "../utils/createEmotionCache";
 import Layout from "../components/Layout/Layout";
 import { TenantContext } from "../utils/TenantContext";
+import { SessionProvider } from "next-auth/react";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-export default function MyApp(props) {
+export default function MyApp({
+  Component,
+  pageProps: { session, ...pageProps },
+  emotionCache = clientSideEmotionCache,
+}) {
   const [tenant, setTenant] = React.useState();
-  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  console.log(session);
 
   return (
-    <CacheProvider value={emotionCache}>
+    <SessionProvider session={session}>
       <TenantContext.Provider value={[tenant, setTenant]}>
         <Head>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
@@ -30,12 +35,6 @@ export default function MyApp(props) {
           </Layout>
         </ThemeProvider>
       </TenantContext.Provider>
-    </CacheProvider>
+    </SessionProvider>
   );
 }
-
-MyApp.propTypes = {
-  Component: PropTypes.elementType.isRequired,
-  emotionCache: PropTypes.object,
-  pageProps: PropTypes.object.isRequired,
-};

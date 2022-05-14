@@ -1,7 +1,14 @@
 import { MyAuthenticationProvider } from "../../../../../utils/customAuthProvider";
 import { Client } from "@microsoft/microsoft-graph-client";
+import { getSession } from "next-auth/react";
 
 const user = () => async (_, res) => {
+  const session = await getSession({ _ });
+  if (!session) {
+    res.status(401).send({ Error: "Not authorized." });
+    return;
+  }
+
   let clientOptions = {
     defaultVersion: "beta",
     authProvider: new MyAuthenticationProvider(

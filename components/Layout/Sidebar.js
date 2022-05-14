@@ -2,6 +2,7 @@ import {
   Drawer,
   Toolbar,
   List,
+  ListSubheader,
   Divider,
   ListItem,
   ListItemButton,
@@ -37,9 +38,15 @@ export default function Sidebar() {
     >
       <Toolbar />
       <TenantSearch />
-      <Divider />
       <Box sx={{ overflow: "auto" }}>
-        <List>
+        <List
+          sx={{ bgcolor: "background.paper" }}
+          subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+              Identity and management
+            </ListSubheader>
+          }
+        >
           <Link
             href="/users"
             style={{ textDecoration: "none" }}
@@ -69,20 +76,6 @@ export default function Sidebar() {
             </ListItem>
           </Link>
           <Link
-            href="/mailboxes"
-            style={{ textDecoration: "none" }}
-            color="inherit"
-          >
-            <ListItem disablePadding>
-              <ListItemButton disabled={tenant ? false : true}>
-                <ListItemIcon>
-                  <Mail />
-                </ListItemIcon>
-                <ListItemText primary={"Mailboxes"} />
-              </ListItemButton>
-            </ListItem>
-          </Link>
-          <Link
             href="/domains"
             style={{ textDecoration: "none" }}
             color="inherit"
@@ -93,6 +86,30 @@ export default function Sidebar() {
                   <Language />
                 </ListItemIcon>
                 <ListItemText primary={"Domains"} />
+              </ListItemButton>
+            </ListItem>
+          </Link>
+        </List>
+        <Divider />
+        <List
+          sx={{ bgcolor: "background.paper" }}
+          subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+              Exchange Online
+            </ListSubheader>
+          }
+        >
+          <Link
+            href="/mailboxes"
+            style={{ textDecoration: "none" }}
+            color="inherit"
+          >
+            <ListItem disablePadding>
+              <ListItemButton disabled={tenant ? false : true}>
+                <ListItemIcon>
+                  <Mail />
+                </ListItemIcon>
+                <ListItemText primary={"Mailboxes"} />
               </ListItemButton>
             </ListItem>
           </Link>
@@ -112,7 +129,6 @@ export default function Sidebar() {
           </Link>
         </List>
       </Box>
-      <Divider />
     </Drawer>
   );
 }

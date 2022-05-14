@@ -7,10 +7,14 @@ import { CustomToolbar } from "../components/CustomToolbar";
 import useSWR from "swr";
 import { Products } from "../utils/SKUList";
 import { Edit } from "@mui/icons-material";
+import { useSession } from "next-auth/react";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function Users() {
+  const { data: session, status } = useSession({
+    required: true,
+  });
   const [tenant] = useContext(TenantContext);
 
   const { data, error } = useSWR(

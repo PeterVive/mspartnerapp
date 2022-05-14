@@ -5,10 +5,15 @@ import { TenantContext } from "../utils/TenantContext";
 import { DataGrid } from "@mui/x-data-grid";
 import { CustomToolbar } from "../components/CustomToolbar";
 import useSWR from "swr";
+import { useSession } from "next-auth/react";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function Domains() {
+  const { data: session, status } = useSession({
+    required: true,
+  });
+
   const [tenant] = useContext(TenantContext);
 
   const { data, error } = useSWR(
