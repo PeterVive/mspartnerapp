@@ -57,7 +57,7 @@ export default function Users() {
         <GridActionsCellItem
           key={params.id}
           icon={<Edit />}
-          onClick={console.log("Trying to edit " + params.id)}
+          onClick={""}
           label="Edit"
         />,
       ],
