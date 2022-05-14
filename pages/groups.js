@@ -47,6 +47,14 @@ export default function Groups() {
   } else {
     content = (
       <>
+        <Head>
+          <title>{tenant.displayName} - Groups</title>
+          <meta
+            property="og:title"
+            content={tenant.displayName + " Groups"}
+            key="title"
+          />
+        </Head>
         <Typography variant="h4" component="h1" gutterBottom>
           Groups
         </Typography>
@@ -64,17 +72,5 @@ export default function Groups() {
     );
   }
 
-  return (
-    <div style={{ height: "80vh", width: "100%" }}>
-      <Head>
-        <title>{tenant.displayName} - Groups</title>
-        <meta
-          property="og:title"
-          content={tenant.displayName + " Groups"}
-          key="title"
-        />
-      </Head>
-      {content}
-    </div>
-  );
+  return <div style={{ height: "80vh", width: "100%" }}>{content}</div>;
 }

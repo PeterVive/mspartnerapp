@@ -66,6 +66,14 @@ export default function Mailboxes() {
   } else {
     content = (
       <>
+        <Head>
+          <title>{tenant.displayName} - Mailboxes</title>
+          <meta
+            property="og:title"
+            content={tenant.displayName + " Mailboxes"}
+            key="title"
+          />
+        </Head>
         <Typography variant="h4" component="h1" gutterBottom>
           Mailboxes
         </Typography>
@@ -84,17 +92,5 @@ export default function Mailboxes() {
     );
   }
 
-  return (
-    <div style={{ height: "80vh", width: "100%" }}>
-      <Head>
-        <title>{tenant.displayName} - Mailboxes</title>
-        <meta
-          property="og:title"
-          content={tenant.displayName + " Mailboxes"}
-          key="title"
-        />
-      </Head>
-      {content}
-    </div>
-  );
+  return <div style={{ height: "80vh", width: "100%" }}>{content}</div>;
 }

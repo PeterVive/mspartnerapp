@@ -48,6 +48,14 @@ export default function Domains() {
   } else {
     content = (
       <>
+        <Head>
+          <title>{tenant.displayName} - Domains</title>
+          <meta
+            property="og:title"
+            content={tenant.displayName + " Domains"}
+            key="title"
+          />
+        </Head>
         <Typography variant="h4" component="h1" gutterBottom>
           Domains
         </Typography>
@@ -65,17 +73,5 @@ export default function Domains() {
     );
   }
 
-  return (
-    <div style={{ height: "80vh", width: "100%" }}>
-      <Head>
-        <title>{tenant.displayName} - Domains</title>
-        <meta
-          property="og:title"
-          content={tenant.displayName + " Domains"}
-          key="title"
-        />
-      </Head>
-      {content}
-    </div>
-  );
+  return <div style={{ height: "80vh", width: "100%" }}>{content}</div>;
 }

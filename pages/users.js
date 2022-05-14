@@ -82,6 +82,14 @@ export default function Users() {
   } else {
     content = (
       <>
+        <Head>
+          <title>{tenant.displayName} - Users</title>
+          <meta
+            property="og:title"
+            content={tenant.displayName + " Users"}
+            key="title"
+          />
+        </Head>
         <Typography variant="h4" component="h1" gutterBottom>
           Users
         </Typography>
@@ -99,17 +107,5 @@ export default function Users() {
     );
   }
 
-  return (
-    <div style={{ height: "80vh", width: "100%" }}>
-      <Head>
-        <title>{tenant.displayName} - Users</title>
-        <meta
-          property="og:title"
-          content={tenant.displayName + " Users"}
-          key="title"
-        />
-      </Head>
-      {content}
-    </div>
-  );
+  return <div style={{ height: "80vh", width: "100%" }}>{content}</div>;
 }
