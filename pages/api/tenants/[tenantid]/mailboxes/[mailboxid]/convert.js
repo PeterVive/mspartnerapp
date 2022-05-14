@@ -2,7 +2,7 @@ import { getSession } from "next-auth/react";
 
 /* eslint-disable import/no-anonymous-default-export */
 export default async (_, res) => {
-  const session = await getSession({ _ });
+  const session = await getSession({ req: _ });
   if (!session) {
     res.status(401).send({ Error: "Not authorized." });
     return;
