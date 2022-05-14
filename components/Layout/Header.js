@@ -7,18 +7,16 @@ import Button from "@mui/material/Button";
 
 export default function Header() {
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        position="sticky"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      >
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            MSPartnerApp
-          </Typography>
-          <Button color="inherit">Login</Button>
-        </Toolbar>
-      </AppBar>
-    </Box>
+    <AppBar
+      position="fixed"
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    >
+      <Toolbar>
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          MSPartnerApp
+        </Typography>
+        <Button color="inherit">Login</Button>
+      </Toolbar>
+    </AppBar>
   );
 }

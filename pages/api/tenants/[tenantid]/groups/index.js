@@ -1,6 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { MyAuthenticationProvider } from "../../../../../utils/customAuthProvider";
-import { Client } from "@microsoft/microsoft-graph-client";
+import { Client, PageIterator } from "@microsoft/microsoft-graph-client";
 
 export default async (_, res) => {
   let clientOptions = {
@@ -13,6 +13,13 @@ export default async (_, res) => {
   };
 
   const client = Client.initWithMiddleware(clientOptions);
-  const groups = (await client.api(`/groups`).get()).value;
+  const groups = [];
+  const response = await client.api(`/groups`).get();
+  let callback = (data) => {
+    groups.push(data);
+    return true;
+  };
+  let pageIterator = new PageIterator(client, response, callback);
+  await pageIterator.iterate();
   res.status(200).json(groups);
 };

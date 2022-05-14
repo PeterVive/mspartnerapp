@@ -17,7 +17,7 @@ export default function TenantSearch() {
   if (!data)
     return (
       <Box
-        sx={{ margintop: 1 }}
+        sx={{ margintop: 2 }}
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -47,7 +47,7 @@ export default function TenantSearch() {
       onChange={(event, value) => {
         setTenant(value);
       }}
-      sx={{ marginTop: 1 }}
+      sx={{ marginTop: 2 }}
       isOptionEqualToValue={(option, value) => {
         return option.customerId === value.customerId;
       }}

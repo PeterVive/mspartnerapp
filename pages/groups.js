@@ -3,6 +3,7 @@ import { Container, Typography, Box, Alert } from "@mui/material";
 import { useContext } from "react";
 import { TenantContext } from "../utils/TenantContext";
 import { DataGrid } from "@mui/x-data-grid";
+import { CustomToolbar } from "../components/CustomToolbar";
 import useSWR from "swr";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
@@ -15,6 +16,15 @@ export default function Groups() {
     fetcher
   );
 
+  const columns = [
+    {
+      field: "displayName",
+      headerName: "Display name",
+      width: 400,
+    },
+    { field: "mail", headerName: "Mail", width: 300 },
+  ];
+
   let rows = [];
 
   if (error) {
@@ -25,39 +35,41 @@ export default function Groups() {
     rows = data;
   }
 
+  let content;
   if (!tenant) {
-    return (
-      <Container maxWidth="sm">
-        <Box sx={{ my: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            No tenant selected.
-          </Typography>
-        </Box>
-      </Container>
+    content = (
+      <>
+        <Typography variant="h4" component="h1" gutterBottom>
+          No tenant selected.
+        </Typography>
+      </>
+    );
+  } else {
+    content = (
+      <>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Groups
+        </Typography>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          loading={!data}
+          autoPageSize={true}
+          components={{
+            Toolbar: CustomToolbar,
+          }}
+        />
+      </>
     );
   }
 
-  const columns = [
-    {
-      field: "displayName",
-      headerName: "Display name",
-      width: 150,
-    },
-    { field: "mail", headerName: "Mail", width: 600 },
-  ];
+  if (error) {
+    content = <Alert severity="error">An error has occured.</Alert>;
+  }
 
   return (
-    <Container>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Groups
-        <div style={{ height: 400, width: "100%" }}>
-          <div style={{ display: "flex", height: "100%" }}>
-            <div style={{ flexGrow: 1 }}>
-              <DataGrid rows={rows} columns={columns} loading={!data} />
-            </div>
-          </div>
-        </div>
-      </Typography>
-    </Container>
+    <Box>
+      <div style={{ height: "80vh", width: "100%" }}>{content}</div>
+    </Box>
   );
 }

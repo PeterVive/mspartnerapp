@@ -1,6 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { MyAuthenticationProvider } from "../../../../../utils/customAuthProvider";
-import { Client } from "@microsoft/microsoft-graph-client";
+import { Client, PageIterator } from "@microsoft/microsoft-graph-client";
 
 export default async (_, res) => {
   if (!_.query.filter) {
@@ -21,12 +21,18 @@ export default async (_, res) => {
 
   try {
     const client = Client.initWithMiddleware(clientOptions);
-    const mailboxes = await (
-      await client
-        .api(`${_.query.tenantid}/Mailbox`)
-        .filter(_.query.filter)
-        .get()
-    ).value;
+    const mailboxes = [];
+    const response = await client
+      .api(`${_.query.tenantid}/Mailbox`)
+      .filter(_.query.filter)
+      .get();
+
+    let callback = (data) => {
+      mailboxes.push(data);
+      return true;
+    };
+    let pageIterator = new PageIterator(client, response, callback);
+    await pageIterator.iterate();
     res.status(200).json(mailboxes);
   } catch (error) {
     res.status(500).send({

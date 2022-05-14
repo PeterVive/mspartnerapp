@@ -1,7 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { MyAuthenticationProvider } from "../../../utils/customAuthProvider";
-import { Client } from "@microsoft/microsoft-graph-client";
-import NextCors from "nextjs-cors";
+import { Client, PageIterator } from "@microsoft/microsoft-graph-client";
 
 export default async (_, res) => {
   let clientOptions = {
@@ -14,7 +13,13 @@ export default async (_, res) => {
   };
 
   const client = Client.initWithMiddleware(clientOptions);
-
-  const contracts = (await client.api(`/contracts`).top(999).get()).value;
+  const contracts = [];
+  const response = await client.api(`/contracts`).get();
+  let callback = (data) => {
+    contracts.push(data);
+    return true;
+  };
+  let pageIterator = new PageIterator(client, response, callback);
+  await pageIterator.iterate();
   res.status(200).json(contracts);
 };

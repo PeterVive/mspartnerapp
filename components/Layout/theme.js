@@ -15,6 +15,9 @@ const theme = createTheme({
       main: red.A400,
     },
   },
+  typography: {
+    fontFamily: ["IBM Plex Sans"],
+  },
 });
 
 export default theme;
