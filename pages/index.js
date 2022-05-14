@@ -1,7 +1,6 @@
 import * as React from "react";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import { Typography, Box } from "@mui/material/";
+import Head from "next/head";
 import { useSession } from "next-auth/react";
 
 export default function Index() {
@@ -10,6 +9,14 @@ export default function Index() {
   });
   return (
     <Box>
+      <Head>
+        <title>MSPartnerApp - Dashboard</title>
+        <meta
+          property="og:title"
+          content="MSPartnerApp - Dashboard"
+          key="title"
+        />
+      </Head>
       <div style={{ height: "80vh", width: "100%" }}>
         <Typography variant="h3">Welcome to MSPartnerApp</Typography>
         <Typography variant="h5">

@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Container, Typography, Box, Alert } from "@mui/material";
-import { useContext } from "react";
+import { Typography } from "@mui/material";
 import { TenantContext } from "../utils/TenantContext";
 import { DataGrid } from "@mui/x-data-grid";
 import { CustomToolbar } from "../components/CustomToolbar";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -13,7 +13,7 @@ export default function Mailboxes() {
   const { data: session, status } = useSession({
     required: true,
   });
-  const [tenant] = useContext(TenantContext);
+  const [tenant] = React.useContext(TenantContext);
 
   const { data, error } = useSWR(
     tenant ? `/api/tenants/${tenant.customerId}/mailboxes` : null,
@@ -73,6 +73,7 @@ export default function Mailboxes() {
           rows={rows}
           columns={columns}
           loading={!data}
+          error={error}
           getRowId={(row) => row["@odata.id"]}
           autoPageSize={true}
           components={{
@@ -83,15 +84,17 @@ export default function Mailboxes() {
     );
   }
 
-  if (data || error) {
-    if (data.errorMessage || error) {
-      content = <Alert severity="error">An error has occured.</Alert>;
-    }
-  }
-
   return (
-    <Box>
-      <div style={{ height: "80vh", width: "100%" }}>{content}</div>
-    </Box>
+    <div style={{ height: "80vh", width: "100%" }}>
+      <Head>
+        <title>{tenant.displayName} - Mailboxes</title>
+        <meta
+          property="og:title"
+          content={tenant.displayName + " Mailboxes"}
+          key="title"
+        />
+      </Head>
+      {content}
+    </div>
   );
 }

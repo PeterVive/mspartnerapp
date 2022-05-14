@@ -45,7 +45,6 @@ const user = () => async (_, res) => {
           .patch(_.body);
         res.status(200).json(response);
       } catch (error) {
-        console.log(error);
         res.status(500).send({
           errorMessage: error.message,
         });

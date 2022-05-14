@@ -54,7 +54,6 @@ export default async (_, res) => {
         const response = await client.api("/users").post(_.body);
         res.status(200).send(response);
       } catch (error) {
-        console.log(error);
         res.status(500).send({
           errorMessage: error.message,
         });

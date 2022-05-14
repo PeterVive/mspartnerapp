@@ -1,12 +1,13 @@
 import { Box } from "@mui/material";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { CssBaseline, Toolbar } from "@mui/material";
+import { CssBaseline, Toolbar, Paper } from "@mui/material";
 
 export default function Layout({ children }) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
+
       <Header></Header>
       <Sidebar></Sidebar>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

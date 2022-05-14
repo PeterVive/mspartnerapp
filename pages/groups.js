@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Container, Typography, Box, Alert } from "@mui/material";
-import { useContext } from "react";
+import { Typography } from "@mui/material";
 import { TenantContext } from "../utils/TenantContext";
 import { DataGrid } from "@mui/x-data-grid";
 import { CustomToolbar } from "../components/CustomToolbar";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -13,7 +13,7 @@ export default function Groups() {
   const { data: session, status } = useSession({
     required: true,
   });
-  const [tenant] = useContext(TenantContext);
+  const [tenant] = React.useContext(TenantContext);
 
   const { data, error } = useSWR(
     tenant ? `/api/tenants/${tenant.customerId}/groups` : null,
@@ -30,10 +30,6 @@ export default function Groups() {
   ];
 
   let rows = [];
-
-  if (error) {
-    return <Alert severity="error">An error has occured.</Alert>;
-  }
 
   if (data) {
     rows = data;
@@ -58,6 +54,7 @@ export default function Groups() {
           rows={rows}
           columns={columns}
           loading={!data}
+          error={error}
           autoPageSize={true}
           components={{
             Toolbar: CustomToolbar,
@@ -67,13 +64,17 @@ export default function Groups() {
     );
   }
 
-  if (error) {
-    content = <Alert severity="error">An error has occured.</Alert>;
-  }
-
   return (
-    <Box>
-      <div style={{ height: "80vh", width: "100%" }}>{content}</div>
-    </Box>
+    <div style={{ height: "80vh", width: "100%" }}>
+      <Head>
+        <title>{tenant.displayName} - Groups</title>
+        <meta
+          property="og:title"
+          content={tenant.displayName + " Groups"}
+          key="title"
+        />
+      </Head>
+      {content}
+    </div>
   );
 }

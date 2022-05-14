@@ -69,7 +69,6 @@ export class MyAuthenticationProvider {
       const accessToken = await (await response.json()).access_token;
       return accessToken;
     } catch (err) {
-      console.log(err);
       Promise.reject(err);
     }
     return Promise.reject();

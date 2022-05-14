@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  Container,
-  Typography,
-  Box,
-  Alert,
-  CircularProgress,
-} from "@mui/material";
-import { useContext } from "react";
+import { Typography, Box, Alert, CircularProgress } from "@mui/material";
 import { TenantContext } from "../utils/TenantContext";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
@@ -17,7 +10,7 @@ export default function OrganizationConfig() {
   const { data: session, status } = useSession({
     required: true,
   });
-  const [tenant] = useContext(TenantContext);
+  const [tenant] = React.useContext(TenantContext);
 
   const { data, error } = useSWR(
     tenant

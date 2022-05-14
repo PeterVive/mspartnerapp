@@ -39,7 +39,6 @@ export default async (_, res) => {
       .post(JSON.stringify(requestBody));
     res.status(200).json(data);
   } catch (error) {
-    console.log(error);
     res.status(500).json(error);
   }
 };

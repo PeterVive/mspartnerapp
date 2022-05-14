@@ -19,22 +19,25 @@ export default function MyApp({
   emotionCache = clientSideEmotionCache,
 }) {
   const [tenant, setTenant] = React.useState();
-  console.log(session);
 
   return (
-    <SessionProvider session={session}>
-      <TenantContext.Provider value={[tenant, setTenant]}>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-        </Head>
-        <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </ThemeProvider>
-      </TenantContext.Provider>
-    </SessionProvider>
+    <CacheProvider value={emotionCache}>
+      <SessionProvider session={session}>
+        <TenantContext.Provider value={[tenant, setTenant]}>
+          <Head>
+            <meta
+              name="viewport"
+              content="initial-scale=1, width=device-width"
+            />
+          </Head>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ThemeProvider>
+        </TenantContext.Provider>
+      </SessionProvider>
+    </CacheProvider>
   );
 }
