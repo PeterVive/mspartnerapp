@@ -1,5 +1,5 @@
 {
-  "name": "nextjs",
+  "name": "mspartnerapp",
   "version": "5.0.0",
   "private": true,
   "scripts": {
@@ -18,7 +18,6 @@
     "@mui/icons-material": "latest",
     "@mui/material": "latest",
     "@mui/x-data-grid": "^5.11.0",
-    "axios": "^0.27.2",
     "isomorphic-fetch": "^3.0.0",
     "next": "latest",
     "next-auth": "^4.3.4",
@@ -26,7 +25,6 @@
     "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-json-view": "^1.21.3",
     "swr": "^1.3.0",
     "url": "^0.11.0"
   },
