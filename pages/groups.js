@@ -23,7 +23,6 @@ export default function Users() {
   if (data) {
     // Detect group type
     data.forEach((group) => {
-      console.log(group);
       if (group.groupTypes.includes("Unified")) {
         group.foundGroupType = "Microsoft 365";
       } else if (group.mailEnabled == false && group.securityEnabled == true) {
@@ -73,6 +72,7 @@ export default function Users() {
             tableLayout: "fixed",
             columnResizable: true,
             columnsButton: true,
+            pageSize: 10,
             exportMenu: [
               {
                 label: "Export PDF",

@@ -1,9 +1,4 @@
-import {
-  CircularProgress,
-  TextField,
-  Autocomplete,
-  Skeleton,
-} from "@mui/material";
+import { CircularProgress, TextField, Autocomplete } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useContext } from "react";
 import useSWR from "swr";

@@ -2,7 +2,6 @@ import * as React from "react";
 import { Typography } from "@mui/material";
 import { TenantContext } from "../utils/TenantContext";
 import useSWR from "swr";
-import { Products } from "../utils/SKUList";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import MaterialTable from "@material-table/core";
@@ -72,6 +71,7 @@ export default function Users() {
             tableLayout: "fixed",
             columnResizable: true,
             columnsButton: true,
+            pageSize: 10,
             exportMenu: [
               {
                 label: "Export PDF",
