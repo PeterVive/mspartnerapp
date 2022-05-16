@@ -1,19 +1,18 @@
 import * as React from "react";
 import { Typography } from "@mui/material";
 import { TenantContext } from "../utils/TenantContext";
-import { DataGrid } from "@mui/x-data-grid";
-import { CustomToolbar } from "../components/CustomToolbar";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
+import MaterialTable from "@material-table/core";
+import { ExportCsv, ExportPdf } from "@material-table/exporters";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export default function Domains() {
+export default function Users() {
   const { data: session, status } = useSession({
     required: true,
   });
-
   const [tenant] = React.useContext(TenantContext);
 
   const { data, error } = useSWR(
@@ -22,23 +21,14 @@ export default function Domains() {
   );
 
   const columns = [
-    {
-      field: "id",
-      headerName: "Domain name",
-      width: 400,
-    },
-    { field: "isVerified", headerName: "Verified", width: 600 },
+    { title: "Domain name", field: "id" },
+    { title: "Verified", field: "isVerified" },
   ];
 
-  let rows = [];
-
-  if (data) {
-    rows = data;
-  }
-
   let content;
+
   if (!tenant) {
-    return (
+    content = (
       <>
         <Typography variant="h4" component="h1" gutterBottom>
           No tenant selected.
@@ -56,17 +46,42 @@ export default function Domains() {
             key="title"
           />
         </Head>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Domains
-        </Typography>
-        <DataGrid
-          rows={rows}
+        <MaterialTable
+          title="Domains"
+          data={data}
           columns={columns}
-          loading={!data}
+          isLoading={!data}
           error={error}
-          autoPageSize={true}
-          components={{
-            Toolbar: CustomToolbar,
+          options={{
+            tableLayout: "fixed",
+            columnResizable: true,
+            exportMenu: [
+              {
+                label: "Export PDF",
+                //// You can do whatever you wish in this function. We provide the
+                //// raw table columns and table data for you to modify, if needed.
+                // exportFunc: (cols, datas) => console.log({ cols, datas })
+                exportFunc: (cols, datas) =>
+                  ExportPdf(
+                    cols,
+                    datas,
+                    tenant.displayName +
+                      " Domains " +
+                      new Date().toLocaleDateString()
+                  ),
+              },
+              {
+                label: "Export CSV",
+                exportFunc: (cols, datas) =>
+                  ExportCsv(
+                    cols,
+                    datas,
+                    tenant.displayName +
+                      " Domains " +
+                      new Date().toLocaleDateString()
+                  ),
+              },
+            ],
           }}
         />
       </>

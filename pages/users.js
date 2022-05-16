@@ -1,13 +1,12 @@
 import * as React from "react";
 import { Typography } from "@mui/material";
 import { TenantContext } from "../utils/TenantContext";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
-import { CustomToolbar } from "../components/CustomToolbar";
 import useSWR from "swr";
 import { Products } from "../utils/SKUList";
-import { Edit } from "@mui/icons-material";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
+import MaterialTable from "@material-table/core";
+import { ExportCsv, ExportPdf } from "@material-table/exporters";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -22,52 +21,27 @@ export default function Users() {
     fetcher
   );
 
-  const columns = [
-    { field: "userPrincipalName", headerName: "UPN", width: 400 },
-    {
-      field: "displayName",
-      headerName: "Display name",
-      width: 400,
-    },
-    {
-      field: "assignedLicenses",
-      headerName: "Licenses",
-      width: 600,
-      valueFormatter: (params) => {
-        if (params.value == null) {
-          return "";
-        }
-        let allLicenses = [];
-        params.value.forEach((license) => {
-          if (license.skuId) {
-            let product = Products.find(
-              (product) => product.GUID === license.skuId
-            );
-            allLicenses.push(product.Product_Display_Name);
-          }
-        });
-        return allLicenses.join(" + ");
-      },
-    },
-    {
-      field: "actions",
-      type: "actions",
-      width: 80,
-      getActions: (params) => [
-        <GridActionsCellItem
-          key={params.id}
-          icon={<Edit />}
-          onClick={""}
-          label="Edit"
-        />,
-      ],
-    },
-  ];
-  let rows = [];
-
   if (data) {
-    rows = data;
+    // Convert license data to more table-friendly format
+    data.forEach((user) => {
+      const allLicenses = [];
+      user.assignedLicenses.forEach((assignedLicense) => {
+        if (assignedLicense.skuId) {
+          const product = Products.find(
+            (product) => product.GUID === assignedLicense.skuId
+          );
+          allLicenses.push(product.Product_Display_Name);
+        }
+      });
+      user.displayableLicenses = allLicenses.join(" + ");
+    });
   }
+
+  const columns = [
+    { title: "UPN", field: "userPrincipalName" },
+    { title: "Display name", field: "displayName" },
+    { title: "Licenses", field: "displayableLicenses" },
+  ];
 
   let content;
 
@@ -90,17 +64,42 @@ export default function Users() {
             key="title"
           />
         </Head>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Users
-        </Typography>
-        <DataGrid
-          rows={rows}
+        <MaterialTable
+          title="Users"
+          data={data}
           columns={columns}
-          loading={!data}
+          isLoading={!data}
           error={error}
-          autoPageSize={true}
-          components={{
-            Toolbar: CustomToolbar,
+          options={{
+            tableLayout: "fixed",
+            columnResizable: true,
+            exportMenu: [
+              {
+                label: "Export PDF",
+                //// You can do whatever you wish in this function. We provide the
+                //// raw table columns and table data for you to modify, if needed.
+                // exportFunc: (cols, datas) => console.log({ cols, datas })
+                exportFunc: (cols, datas) =>
+                  ExportPdf(
+                    cols,
+                    datas,
+                    tenant.displayName +
+                      " Users " +
+                      new Date().toLocaleDateString()
+                  ),
+              },
+              {
+                label: "Export CSV",
+                exportFunc: (cols, datas) =>
+                  ExportCsv(
+                    cols,
+                    datas,
+                    tenant.displayName +
+                      " Users " +
+                      new Date().toLocaleDateString()
+                  ),
+              },
+            ],
           }}
         />
       </>

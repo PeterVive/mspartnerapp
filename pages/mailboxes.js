@@ -1,15 +1,16 @@
 import * as React from "react";
 import { Typography } from "@mui/material";
 import { TenantContext } from "../utils/TenantContext";
-import { DataGrid } from "@mui/x-data-grid";
-import { CustomToolbar } from "../components/CustomToolbar";
 import useSWR from "swr";
+import { Products } from "../utils/SKUList";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
+import MaterialTable from "@material-table/core";
+import { ExportCsv, ExportPdf } from "@material-table/exporters";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export default function Mailboxes() {
+export default function Users() {
   const { data: session, status } = useSession({
     required: true,
   });
@@ -20,37 +21,24 @@ export default function Mailboxes() {
     fetcher
   );
 
-  let rows = [];
-
   if (data) {
-    rows = data;
+    // Convert license data to more table-friendly format
+    data.forEach((mailbox) => {
+      const aliasList = [];
+      mailbox.EmailAddresses.forEach((alias) => {
+        if (alias.startsWith("smtp:")) {
+          aliasList.push(alias.slice(5));
+        }
+      });
+      mailbox.Alias = aliasList.join(",\r\n");
+    });
   }
 
   const columns = [
-    { field: "UserPrincipalName", headerName: "UPN", width: 300 },
-    {
-      field: "DisplayName",
-      headerName: "Display name",
-      width: 150,
-    },
-    {
-      field: "EmailAddresses",
-      headerName: "Aliases",
-      width: 600,
-      valueFormatter: (params) => {
-        if (params.value == null) {
-          return "";
-        }
-        const aliasList = [];
-        params.value.forEach((alias) => {
-          if (alias.startsWith("smtp:")) {
-            aliasList.push(alias.slice(5));
-          }
-        });
-        return aliasList.join(",");
-      },
-    },
-    { field: "RecipientTypeDetails", headerName: "Type", width: 200 },
+    { title: "UPN", field: "UserPrincipalName" },
+    { title: "Display name", field: "DisplayName" },
+    { title: "Alias", field: "Alias" },
+    { title: "Type", field: "RecipientTypeDetails" },
   ];
 
   let content;
@@ -74,18 +62,42 @@ export default function Mailboxes() {
             key="title"
           />
         </Head>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Mailboxes
-        </Typography>
-        <DataGrid
-          rows={rows}
+        <MaterialTable
+          title="Mailboxes"
+          data={data}
           columns={columns}
-          loading={!data}
+          isLoading={!data}
           error={error}
-          getRowId={(row) => row["@odata.id"]}
-          autoPageSize={true}
-          components={{
-            Toolbar: CustomToolbar,
+          options={{
+            tableLayout: "fixed",
+            columnResizable: true,
+            exportMenu: [
+              {
+                label: "Export PDF",
+                //// You can do whatever you wish in this function. We provide the
+                //// raw table columns and table data for you to modify, if needed.
+                // exportFunc: (cols, datas) => console.log({ cols, datas })
+                exportFunc: (cols, datas) =>
+                  ExportPdf(
+                    cols,
+                    datas,
+                    tenant.displayName +
+                      " Mailboxes " +
+                      new Date().toLocaleDateString()
+                  ),
+              },
+              {
+                label: "Export CSV",
+                exportFunc: (cols, datas) =>
+                  ExportCsv(
+                    cols,
+                    datas,
+                    tenant.displayName +
+                      " Mailboxes " +
+                      new Date().toLocaleDateString()
+                  ),
+              },
+            ],
           }}
         />
       </>
