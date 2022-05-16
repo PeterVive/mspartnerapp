@@ -66,6 +66,7 @@ export default function Users() {
           data={data}
           columns={columns}
           error={error}
+          exportFileName={tenant.displayName}
         />
       </>
     );

@@ -1,7 +1,13 @@
 import MaterialTable from "@material-table/core";
 import { ExportCsv, ExportPdf } from "@material-table/exporters";
 
-export default function CommonTable({ title, data, columns, error }) {
+export default function CommonTable({
+  title,
+  data,
+  columns,
+  error,
+  exportFileName,
+}) {
   return (
     <MaterialTable
       title={title}
@@ -21,9 +27,7 @@ export default function CommonTable({ title, data, columns, error }) {
               ExportPdf(
                 cols,
                 datas,
-                `${
-                  tenant.displayName
-                } ${title} ${new Date().toLocaleDateString()}`
+                `${exportFileName} ${title} ${new Date().toLocaleDateString()}`
               ),
           },
           {
@@ -32,9 +36,7 @@ export default function CommonTable({ title, data, columns, error }) {
               ExportCsv(
                 cols,
                 datas,
-                `${
-                  tenant.displayName
-                } ${title} ${new Date().toLocaleDateString()}`
+                `${exportFileName} ${title} ${new Date().toLocaleDateString()}`
               ),
           },
         ],
