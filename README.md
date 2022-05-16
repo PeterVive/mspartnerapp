@@ -6,6 +6,11 @@ An application using the Secure Application Model (SAM) to manage your customer 
 
 Uses both public and undocumented MS Graph endpoints to connect to your tenants.
 
+## Screenshots
+
+![Main view](/.github/screenshots/mainview.png)
+![Users view](/.github/screenshots/usersview.png)
+
 ## How to setup
 
 These instructions should get you up and running.
@@ -44,8 +49,3 @@ For creating the Azure AD Application and generating refresh tokens, I recommend
    ```
    npm run build && npm run start
    ```
-
-## Screenshots
-
-![Main view](/.github/screenshots/mainview.png)
-![Users view](/.github/screenshots/usersview.png)
