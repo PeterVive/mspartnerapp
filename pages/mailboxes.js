@@ -12,13 +12,19 @@ export default function Users() {
   });
   const [tenant] = React.useContext(TenantContext);
 
-  const { data, error } = useSWR(
+  let { data, error } = useSWR(
     tenant ? `/api/tenants/${tenant.customerId}/mailboxes` : null
   );
 
   if (data) {
-    // Convert license data to more table-friendly format
-    data.forEach((mailbox) => {
+    // Remove DiscoverySearchMailbox
+    data = data.filter(
+      (mailbox) =>
+        !mailbox.UserPrincipalName.startsWith("DiscoverySearchMailbox")
+    );
+
+    // Convert alias data to more table-friendly format
+    data.forEach((mailbox, index) => {
       const aliasList = [];
       mailbox.EmailAddresses.forEach((alias) => {
         if (alias.startsWith("smtp:")) {
