@@ -16,13 +16,30 @@ export default function Users() {
   const [tenant] = React.useContext(TenantContext);
 
   const { data, error } = useSWR(
-    tenant ? `/api/tenants/${tenant.customerId}/users` : null,
+    tenant ? `/api/tenants/${tenant.customerId}/groups` : null,
     fetcher
   );
+
+  if (data) {
+    // Detect group type
+    data.forEach((group) => {
+      console.log(group);
+      if (group.groupTypes.includes("Unified")) {
+        group.foundGroupType = "Microsoft 365";
+      } else if (group.mailEnabled == false && group.securityEnabled == true) {
+        group.foundGroupType = "Security";
+      } else if (group.mailEnabled == true && group.securityEnabled == true) {
+        group.foundGroupType = "Mail-enabled security";
+      } else if (group.mailEnabled == true && group.securityEnabled == false) {
+        group.foundGroupType = "Distribution";
+      }
+    });
+  }
 
   const columns = [
     { title: "Display name", field: "displayName" },
     { title: "Mail", field: "mail" },
+    { title: "Type", field: "foundGroupType" },
   ];
 
   let content;

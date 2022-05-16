@@ -20,6 +20,6 @@ export default async (_, res) => {
   };
 
   const client = Client.initWithMiddleware(clientOptions);
-  const group = (await client.api(`/groups/${_.query.groupid}`).get()).value;
+  const group = await client.api(`/groups/${_.query.groupid}`).get();
   res.status(200).json(group);
 };
