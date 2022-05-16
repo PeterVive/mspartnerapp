@@ -5,8 +5,7 @@ import useSWR from "swr";
 import { Products } from "../utils/SKUList";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import MaterialTable from "@material-table/core";
-import { ExportCsv, ExportPdf } from "@material-table/exporters";
+import CommonTable from "../components/CommonTable";
 
 export default function Users() {
   const { data: session, status } = useSession({
@@ -62,45 +61,11 @@ export default function Users() {
             key="title"
           />
         </Head>
-        <MaterialTable
-          title="Users"
+        <CommonTable
+          title={"Users"}
           data={data}
           columns={columns}
-          isLoading={!data}
           error={error}
-          options={{
-            tableLayout: "fixed",
-            columnResizable: true,
-            columnsButton: true,
-            pageSize: 10,
-            exportMenu: [
-              {
-                label: "Export PDF",
-                //// You can do whatever you wish in this function. We provide the
-                //// raw table columns and table data for you to modify, if needed.
-                // exportFunc: (cols, datas) => console.log({ cols, datas })
-                exportFunc: (cols, datas) =>
-                  ExportPdf(
-                    cols,
-                    datas,
-                    tenant.displayName +
-                      " Users " +
-                      new Date().toLocaleDateString()
-                  ),
-              },
-              {
-                label: "Export CSV",
-                exportFunc: (cols, datas) =>
-                  ExportCsv(
-                    cols,
-                    datas,
-                    tenant.displayName +
-                      " Users " +
-                      new Date().toLocaleDateString()
-                  ),
-              },
-            ],
-          }}
         />
       </>
     );
