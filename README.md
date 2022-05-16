@@ -44,3 +44,8 @@ For creating the Azure AD Application and generating refresh tokens, I recommend
    ```
    npm run build && npm run start
    ```
+
+## Screenshots
+
+![Main view](/.github/screenshots/mainview.png)
+![Users view](/.github/screenshots/usersview.png)
