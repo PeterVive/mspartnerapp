@@ -13,7 +13,7 @@ Uses both public and undocumented MS Graph endpoints to connect to your tenants.
 
 ## How to setup
 
-These instructions should get you up and running.
+These instructions should get you up and running.  
 For creating the Azure AD Application and generating refresh tokens, I recommend [following the instructions from CIPP](https://cipp.app/docs/user/gettingstarted/prerequisites/).
 
 1. Clone the repository
