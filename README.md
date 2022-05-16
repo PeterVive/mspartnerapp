@@ -26,17 +26,19 @@ For instructions on creating the Azure AD Application and generating refresh tok
    ```
 3. Set environment variables. (You can create a `.env.local` file for local development)
    ```
-    PARTNER_TENANT_ID=tenantname.onmicrosoft.com
-    CLIENT_ID=<SAM Application Client ID>
-    CLIENT_SECRET=<SAM Application Client Secret>
-    REFRESH_TOKEN=<Generated refresh token>
-    EXCHANGE_REFRESH_TOKEN=<Generated exchange refresh token>
-    NEXTAUTH_SECRET=<Random base64 string>
+    PARTNER_TENANT_ID=<Partner-Tenant-ID>
+        In the format tenantname.onmicrosoft.com.
+    CLIENT_ID=<SAM-Application-Client-ID>
+    CLIENT_SECRET=<SAM-Application-Client-Secret>
+    REFRESH_TOKEN=<Generated-Refresh-Token>
+    EXCHANGE_REFRESH_TOKEN=<Generated-Exchange-Refresh-Token>
+    NEXTAUTH_SECRET=<Random-Base64Encoded-String>
         You could generate one using "openssl rand -base64 32".
-    NEXTAUTH_URL=<Deployment URL>
+    NEXTAUTH_URL=<Deployment-URL>
         For example http://localhost:3000 for local development.
    ```
-4. Start the server
+4. Add the Redirect URI `<Deployment-URL>/api/auth/callback/azure-ad` to your Azure AD application.
+5. Start the server
 
    For local development:
 
