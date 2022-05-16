@@ -38,6 +38,7 @@ export default function Users() {
   }
 
   const columns = [
+    { title: "Account enabled", field: "accountEnabled", hidden: true },
     { title: "UPN", field: "userPrincipalName" },
     { title: "Display name", field: "displayName" },
     { title: "Licenses", field: "displayableLicenses" },
