@@ -1,28 +1,36 @@
-import { CircularProgress, TextField, Autocomplete } from "@mui/material";
-import { Box } from "@mui/system";
+import {
+  Alert,
+  AlertTitle,
+  TextField,
+  Autocomplete,
+  Skeleton,
+} from "@mui/material";
 import React, { useContext } from "react";
 import useSWR from "swr";
+import fetcher from "../utils/fetcher";
 import { TenantContext } from "../utils/TenantContext";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function TenantSearch() {
   const [tenant, setTenant] = useContext(TenantContext);
   const { data, error } = useSWR("/api/tenants", fetcher);
-  if (!data)
-    return (
-      <Box
-        sx={{ margintop: 2 }}
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <CircularProgress color="inherit" />
-      </Box>
-    );
-  if (error) return <div>Error..</div>;
 
-  return (
+  if (error) {
+    return (
+      <Alert severity="error">
+        <AlertTitle>Error loading tenants!</AlertTitle>
+      </Alert>
+    );
+  }
+
+  return !data ? (
+    <Skeleton
+      variant="rectangular"
+      sx={{ marginTop: 2, marginLeft: 1, marginRight: 1 }}
+      width="100%"
+    >
+      <TextField fullWidth label="Select a tenant" />
+    </Skeleton>
+  ) : (
     <Autocomplete
       disablePortal
       id="tenant-search"

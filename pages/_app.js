@@ -8,6 +8,8 @@ import createEmotionCache from "../utils/createEmotionCache";
 import Layout from "../components/Layout/Layout";
 import { TenantContext } from "../utils/TenantContext";
 import { SessionProvider } from "next-auth/react";
+import { SWRConfig } from "swr";
+import { fetcher } from "../utils/fetcher";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -22,20 +24,32 @@ export default function MyApp({
   return (
     <CacheProvider value={emotionCache}>
       <SessionProvider session={session}>
-        <TenantContext.Provider value={[tenant, setTenant]}>
-          <Head>
-            <meta
-              name="viewport"
-              content="initial-scale=1, width=device-width"
-            />
-          </Head>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </ThemeProvider>
-        </TenantContext.Provider>
+        <SWRConfig
+          value={{
+            fetcher: fetcher,
+            onError: (error, key) => {
+              //console.log(error);
+            },
+            onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+              if (error.status == 404) return;
+            },
+          }}
+        >
+          <TenantContext.Provider value={[tenant, setTenant]}>
+            <Head>
+              <meta
+                name="viewport"
+                content="initial-scale=1, width=device-width"
+              />
+            </Head>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ThemeProvider>
+          </TenantContext.Provider>
+        </SWRConfig>
       </SessionProvider>
     </CacheProvider>
   );

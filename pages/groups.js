@@ -7,8 +7,6 @@ import Head from "next/head";
 import MaterialTable from "@material-table/core";
 import { ExportCsv, ExportPdf } from "@material-table/exporters";
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
 export default function Users() {
   const { data: session, status } = useSession({
     required: true,
@@ -16,8 +14,7 @@ export default function Users() {
   const [tenant] = React.useContext(TenantContext);
 
   const { data, error } = useSWR(
-    tenant ? `/api/tenants/${tenant.customerId}/groups` : null,
-    fetcher
+    tenant ? `/api/tenants/${tenant.customerId}/groups` : null
   );
 
   if (data) {
