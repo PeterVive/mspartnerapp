@@ -73,6 +73,7 @@ export default function Users() {
           options={{
             tableLayout: "fixed",
             columnResizable: true,
+            columnsButton: true,
             exportMenu: [
               {
                 label: "Export PDF",

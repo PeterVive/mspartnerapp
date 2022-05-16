@@ -47,7 +47,7 @@ export default function TenantSearch() {
       onChange={(event, value) => {
         setTenant(value);
       }}
-      sx={{ marginTop: 2 }}
+      sx={{ marginTop: 2, marginLeft: 1, marginRight: 1 }}
       isOptionEqualToValue={(option, value) => {
         return option.customerId === value.customerId;
       }}
