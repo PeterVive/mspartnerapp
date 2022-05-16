@@ -10,38 +10,22 @@ import { useSession, signIn, signOut } from "next-auth/react";
 export default function Header() {
   const { data: session, status } = useSession();
 
-  if (!session) {
-    return (
-      <AppBar
-        position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      >
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            MSPartnerApp
-          </Typography>
-          <Button color="inherit" onClick={() => signIn()}>
-            Sign in
-          </Button>
-        </Toolbar>
-      </AppBar>
-    );
-  } else {
-    return (
-      <AppBar
-        position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      >
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            MSPartnerApp
-          </Typography>
-          Signed in as {session.user.email}
-          <Button color="inherit" onClick={() => signOut()}>
-            Sign out
-          </Button>
-        </Toolbar>
-      </AppBar>
-    );
-  }
+  return (
+    <AppBar
+      position="fixed"
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    >
+      <Toolbar>
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          MSPartnerApp
+        </Typography>
+        {session
+          ? `Signed in as ${session.user.email}`
+          : "Redirecting to authentication."}
+        <Button color="inherit" onClick={() => signOut()}>
+          Sign out
+        </Button>
+      </Toolbar>
+    </AppBar>
+  );
 }

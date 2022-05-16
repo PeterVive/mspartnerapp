@@ -25,6 +25,12 @@ import { Box } from "@mui/system";
 const drawerWidth = 350;
 
 export default function Sidebar() {
+  const [selectedIndex, setSelectedIndex] = React.useState(null);
+
+  const handleListItemClick = (event, index) => {
+    setSelectedIndex(index);
+  };
+
   const [tenant] = useContext(TenantContext);
 
   return (
@@ -53,7 +59,11 @@ export default function Sidebar() {
             color="inherit"
           >
             <ListItem disablePadding>
-              <ListItemButton disabled={tenant ? false : true}>
+              <ListItemButton
+                disabled={tenant ? false : true}
+                selected={selectedIndex === 0}
+                onClick={(event) => handleListItemClick(event, 0)}
+              >
                 <ListItemIcon>
                   <Person />
                 </ListItemIcon>
@@ -67,7 +77,11 @@ export default function Sidebar() {
             color="inherit"
           >
             <ListItem disablePadding>
-              <ListItemButton disabled={tenant ? false : true}>
+              <ListItemButton
+                disabled={tenant ? false : true}
+                selected={selectedIndex === 1}
+                onClick={(event) => handleListItemClick(event, 1)}
+              >
                 <ListItemIcon>
                   <Group />
                 </ListItemIcon>
@@ -81,7 +95,11 @@ export default function Sidebar() {
             color="inherit"
           >
             <ListItem disablePadding>
-              <ListItemButton disabled={tenant ? false : true}>
+              <ListItemButton
+                disabled={tenant ? false : true}
+                selected={selectedIndex === 2}
+                onClick={(event) => handleListItemClick(event, 2)}
+              >
                 <ListItemIcon>
                   <Language />
                 </ListItemIcon>
@@ -105,7 +123,11 @@ export default function Sidebar() {
             color="inherit"
           >
             <ListItem disablePadding>
-              <ListItemButton disabled={tenant ? false : true}>
+              <ListItemButton
+                disabled={tenant ? false : true}
+                selected={selectedIndex === 3}
+                onClick={(event) => handleListItemClick(event, 3)}
+              >
                 <ListItemIcon>
                   <Mail />
                 </ListItemIcon>
@@ -119,7 +141,11 @@ export default function Sidebar() {
             color="inherit"
           >
             <ListItem disablePadding>
-              <ListItemButton disabled={tenant ? false : true}>
+              <ListItemButton
+                disabled={tenant ? false : true}
+                selected={selectedIndex === 4}
+                onClick={(event) => handleListItemClick(event, 4)}
+              >
                 <ListItemIcon>
                   <Engineering />
                 </ListItemIcon>
