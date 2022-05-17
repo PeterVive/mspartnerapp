@@ -138,7 +138,7 @@ export default function Sidebar() {
           <Link
             href={
               tenant
-                ? `/${tenant.customerId}/mailboxes/organizationConfig`
+                ? `/${tenant.customerId}/mailboxes/organizationconfig`
                 : "#"
             }
             style={{ textDecoration: "none" }}
