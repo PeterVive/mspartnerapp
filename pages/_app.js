@@ -1,4 +1,6 @@
 import * as React from "react";
+import { store } from "../store/store";
+import { Provider } from "react-redux";
 import Head from "next/head";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -6,7 +8,6 @@ import { CacheProvider } from "@emotion/react";
 import theme from "../components/Layout/theme";
 import createEmotionCache from "../utils/createEmotionCache";
 import Layout from "../components/Layout/Layout";
-import { TenantContext } from "../utils/TenantContext";
 import { SessionProvider } from "next-auth/react";
 import { SWRConfig } from "swr";
 import { fetcher } from "../utils/fetcher";
@@ -22,20 +23,26 @@ export default function MyApp({
   const [tenant, setTenant] = React.useState();
 
   return (
-    <CacheProvider value={emotionCache}>
-      <SessionProvider session={session}>
-        <SWRConfig
-          value={{
-            fetcher: fetcher,
-            onError: (error, key) => {
-              //console.log(error);
-            },
-            onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-              if (error.status == 404) return;
-            },
-          }}
-        >
-          <TenantContext.Provider value={[tenant, setTenant]}>
+    <Provider store={store}>
+      <CacheProvider value={emotionCache}>
+        <SessionProvider session={session}>
+          <SWRConfig
+            value={{
+              fetcher: fetcher,
+              onError: (error, key) => {
+                //console.log(error);
+              },
+              onErrorRetry: (
+                error,
+                key,
+                config,
+                revalidate,
+                { retryCount }
+              ) => {
+                if (error.status == 404) return;
+              },
+            }}
+          >
             <Head>
               <meta
                 name="viewport"
@@ -48,9 +55,9 @@ export default function MyApp({
                 <Component {...pageProps} />
               </Layout>
             </ThemeProvider>
-          </TenantContext.Provider>
-        </SWRConfig>
-      </SessionProvider>
-    </CacheProvider>
+          </SWRConfig>
+        </SessionProvider>
+      </CacheProvider>
+    </Provider>
   );
 }

@@ -5,13 +5,19 @@ import {
   Autocomplete,
   Skeleton,
 } from "@mui/material";
-import React, { useContext } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import fetcher from "../utils/fetcher";
-import { TenantContext } from "../utils/TenantContext";
+import { useSelector, useDispatch } from "react-redux";
+import { setTenant } from "../features/tenantSlice";
 
 export default function TenantSearch() {
-  const [tenant, setTenant] = useContext(TenantContext);
+  const tenant = useSelector((state) => state.tenant.value);
+  const dispatch = useDispatch();
+
+  const [value, setValue] = useState(tenant);
+  const [inputValue, setInputValue] = useState("");
+
   const { data, error } = useSWR("/api/tenants", fetcher);
 
   if (error) {
@@ -21,6 +27,16 @@ export default function TenantSearch() {
       </Alert>
     );
   }
+
+  const getSelectedOption = () => {
+    if (tenant && data) {
+      return data.find(
+        (foundTenant) => foundTenant.displayName === tenant.displayName
+      );
+    } else {
+      return null;
+    }
+  };
 
   return !data ? (
     <Skeleton
@@ -32,8 +48,10 @@ export default function TenantSearch() {
     </Skeleton>
   ) : (
     <Autocomplete
+      autoSelect
       disablePortal
       id="tenant-search"
+      autoHighlight
       options={data}
       getOptionLabel={(option) => option.displayName}
       renderOption={(props, option) => {
@@ -43,12 +61,19 @@ export default function TenantSearch() {
           </li>
         );
       }}
+      value={getSelectedOption()}
+      inputValue={inputValue}
       loading={!data}
       renderInput={(params) => (
         <TextField {...params} label="Select a tenant" />
       )}
       onChange={(event, value) => {
-        setTenant(value);
+        setValue(value);
+        console.log("Should be setting state?" + value.displayName);
+        dispatch(setTenant(value));
+      }}
+      onInputChange={(event, value) => {
+        setInputValue(value);
       }}
       sx={{ marginTop: 2, marginLeft: 1, marginRight: 1 }}
       isOptionEqualToValue={(option, value) => {

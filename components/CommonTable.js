@@ -57,7 +57,7 @@ export default function CommonTable({
                 {columns.map((col) => {
                   if (col.field) {
                     return (
-                      <td>
+                      <td key={col.tableData.id}>
                         <Box sx={{ display: "flex", alignItems: "flex-end" }}>
                           <TextField
                             id={col.field}

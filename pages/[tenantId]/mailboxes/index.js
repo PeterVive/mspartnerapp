@@ -1,16 +1,42 @@
 import * as React from "react";
 import { Typography } from "@mui/material";
-import { TenantContext } from "../utils/TenantContext";
+import { useSelector, useDispatch } from "react-redux";
+import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import CommonTable from "../components/CommonTable";
+import CommonTable from "../../../components/CommonTable";
+import { useRouter } from "next/router";
 
 export default function Users() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { tenantId } = router.query;
+
   const { data: session, status } = useSession({
     required: true,
   });
-  const [tenant] = React.useContext(TenantContext);
+
+  const tenant = useSelector((state) => state.tenant.value);
+
+  // Load tenantData if Tenant is not set in store, but is in query parameter.
+  const { data: tenantData, error: tenantError } = useSWR(
+    !tenant && tenantId ? `/api/tenants/${tenantId}/` : null
+  );
+
+  React.useEffect(() => {
+    // When tenanData has loaded, set the state in store to update other components.
+    if (tenantData) {
+      dispatch(setTenant(tenantData));
+    }
+
+    // When tenant state in store is set, push the current tenant to URL.
+    if (tenant) {
+      router.push(`/${tenant.customerId}/mailboxes`, undefined, {
+        shallow: true,
+      });
+    }
+  });
 
   let { data, error } = useSWR(
     tenant ? `/api/tenants/${tenant.customerId}/mailboxes` : null

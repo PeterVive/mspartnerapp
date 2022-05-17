@@ -1,8 +1,9 @@
+/* eslint-disable import/no-anonymous-default-export */
 import { MyAuthenticationProvider } from "../../../utils/customAuthProvider";
 import { Client } from "@microsoft/microsoft-graph-client";
 import { getSession } from "next-auth/react";
 
-const tenant = () => async (_, res) => {
+export default async (_, res) => {
   const session = await getSession({ req: _ });
   if (!session) {
     res.status(401).send({ Error: "Not authorized." });
@@ -25,7 +26,7 @@ const tenant = () => async (_, res) => {
         .api(`/contracts`)
         .filter(`customerId eq ${_.query.tenantid}`)
         .get()
-    ).value;
+    ).value[0];
     res.status(200).json(contract);
   } catch (error) {
     res.status(500).send({
@@ -33,4 +34,3 @@ const tenant = () => async (_, res) => {
     });
   }
 };
-export default tenant;
