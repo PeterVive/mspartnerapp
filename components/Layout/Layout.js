@@ -1,7 +1,6 @@
-import { Box } from "@mui/material";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { CssBaseline, Toolbar, Paper } from "@mui/material";
+import { CssBaseline, Toolbar, Box } from "@mui/material";
 
 export default function Layout({ children }) {
   return (

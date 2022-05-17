@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { setTenant } from "../../../features/tenantSlice";
@@ -26,7 +26,7 @@ export default function Users() {
     !tenant && tenantId ? `/api/tenants/${tenantId}/` : null
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     // When tenanData has loaded, set the state in store to update other components.
     if (tenantData) {
       dispatch(setTenant(tenantData));

@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Typography, Box } from "@mui/material/";
 import Head from "next/head";
 import { useSession } from "next-auth/react";

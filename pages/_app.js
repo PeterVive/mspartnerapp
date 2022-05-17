@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { store } from "../store/store";
 import { Provider } from "react-redux";
 import Head from "next/head";
@@ -20,7 +20,7 @@ export default function MyApp({
   pageProps: { session, ...pageProps },
   emotionCache = clientSideEmotionCache,
 }) {
-  const [tenant, setTenant] = React.useState();
+  const [tenant, setTenant] = useState();
 
   return (
     <Provider store={store}>

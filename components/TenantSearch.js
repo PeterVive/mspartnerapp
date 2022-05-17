@@ -1,10 +1,4 @@
-import {
-  Alert,
-  AlertTitle,
-  TextField,
-  Autocomplete,
-  Skeleton,
-} from "@mui/material";
+import { TextField, Autocomplete, Skeleton } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 import fetcher from "../utils/fetcher";
@@ -21,11 +15,7 @@ export default function TenantSearch() {
   const { data, error } = useSWR("/api/tenants", fetcher);
 
   if (error) {
-    return (
-      <Alert severity="error">
-        <AlertTitle>Error loading tenants!</AlertTitle>
-      </Alert>
-    );
+    return <div>Error loading tenants..</div>;
   }
 
   const getSelectedOption = () => {
@@ -69,7 +59,6 @@ export default function TenantSearch() {
       )}
       onChange={(event, value) => {
         setValue(value);
-        console.log("Should be setting state?" + value.displayName);
         dispatch(setTenant(value));
       }}
       onInputChange={(event, value) => {

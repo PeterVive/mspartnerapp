@@ -1,7 +1,6 @@
 import MaterialTable from "@material-table/core";
 import { ExportCsv, ExportPdf } from "@material-table/exporters";
-import { Box } from "@mui/system";
-import { TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment, Box } from "@mui/material";
 import { FilterAlt } from "@mui/icons-material";
 
 export default function CommonTable({

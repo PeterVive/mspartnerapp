@@ -8,6 +8,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Box,
 } from "@mui/material";
 import {
   Person,
@@ -20,7 +21,6 @@ import TenantSearch from "../TenantSearch";
 import Link from "../Link";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Box } from "@mui/system";
 
 const drawerWidth = 350;
 
