@@ -61,6 +61,7 @@ export default function TenantSearch() {
         setValue(value);
         dispatch(setTenant(value));
       }}
+      onc
       onInputChange={(event, value) => {
         setInputValue(value);
       }}
