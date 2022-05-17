@@ -6,6 +6,7 @@ import { Products } from "../utils/SKUList";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../components/CommonTable";
+import { CheckBox, CheckBoxOutlineBlank } from "@mui/icons-material/";
 
 export default function Users() {
   const { data: session, status } = useSession({
@@ -34,10 +35,32 @@ export default function Users() {
   }
 
   const columns = [
-    { title: "Account enabled", field: "accountEnabled", hidden: true },
-    { title: "UPN", field: "userPrincipalName" },
-    { title: "Display name", field: "displayName" },
-    { title: "Licenses", field: "displayableLicenses" },
+    {
+      title: "Account enabled",
+      field: "accountEnabled",
+      hidden: true,
+      render: (rowData) =>
+        rowData.accountEnabled ? <CheckBox /> : <CheckBoxOutlineBlank />,
+    },
+    { title: "Type", field: "userType", hidden: true },
+    {
+      title: "UPN",
+      field: "userPrincipalName",
+    },
+    {
+      title: "Display name",
+      field: "displayName",
+    },
+    {
+      title: "Licenses",
+      field: "displayableLicenses",
+    },
+    {
+      title: "AD-Synced",
+      field: "onPremisesSyncEnabled",
+      render: (rowData) =>
+        rowData.onPremisesSyncEnabled ? <CheckBox /> : <CheckBoxOutlineBlank />,
+    },
   ];
 
   let content;
