@@ -32,9 +32,12 @@ export default function Users() {
 
     // When tenant state in store is set, push the current tenant to URL.
     if (tenant) {
-      router.push(`/${tenant.customerId}/domains`, undefined, {
-        shallow: true,
-      });
+      const desiredURL = `/${tenant.customerId}/domains`;
+      if (router.asPath !== desiredURL) {
+        router.push(desiredURL, undefined, {
+          shallow: true,
+        });
+      }
     }
   });
 

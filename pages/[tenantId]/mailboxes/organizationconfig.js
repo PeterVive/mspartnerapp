@@ -30,13 +30,12 @@ export default function OrganizationConfig() {
 
     // When tenant state in store is set, push the current tenant to URL.
     if (tenant) {
-      router.push(
-        `/${tenant.customerId}/mailboxes/organizationconfig`,
-        undefined,
-        {
+      const desiredURL = `/${tenant.customerId}/mailboxes/organizationconfig`;
+      if (router.asPath !== desiredURL) {
+        router.push(desiredURL, undefined, {
           shallow: true,
-        }
-      );
+        });
+      }
     }
   });
 
