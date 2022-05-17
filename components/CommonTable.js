@@ -45,6 +45,7 @@ export default function CommonTable({
               ),
           },
         ],
+        exportAllData: true,
       }}
       components={{
         FilterRow: (rowProps) => {
