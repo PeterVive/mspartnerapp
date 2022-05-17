@@ -18,20 +18,20 @@ import {
 } from "@mui/icons-material";
 import TenantSearch from "../TenantSearch";
 import Link from "../Link";
-import React, { useContext } from "react";
-import { TenantContext } from "../../utils/TenantContext";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Box } from "@mui/system";
 
 const drawerWidth = 350;
 
 export default function Sidebar() {
-  const [selectedIndex, setSelectedIndex] = React.useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
   };
 
-  const [tenant] = useContext(TenantContext);
+  const tenant = useSelector((state) => state.tenant.value);
 
   return (
     <Drawer
@@ -54,7 +54,7 @@ export default function Sidebar() {
           }
         >
           <Link
-            href="/users"
+            href={tenant ? `/${tenant.customerId}/users` : "#"}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
@@ -72,7 +72,7 @@ export default function Sidebar() {
             </ListItem>
           </Link>
           <Link
-            href="/groups"
+            href={tenant ? `/${tenant.customerId}/groups` : "#"}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
@@ -90,7 +90,7 @@ export default function Sidebar() {
             </ListItem>
           </Link>
           <Link
-            href="/domains"
+            href={tenant ? `/${tenant.customerId}/domains` : "#"}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
@@ -118,7 +118,7 @@ export default function Sidebar() {
           }
         >
           <Link
-            href="/mailboxes"
+            href={tenant ? `/${tenant.customerId}/mailboxes` : "#"}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
@@ -136,7 +136,11 @@ export default function Sidebar() {
             </ListItem>
           </Link>
           <Link
-            href="/organizationconfig"
+            href={
+              tenant
+                ? `/${tenant.customerId}/mailboxes/organizationConfig`
+                : "#"
+            }
             style={{ textDecoration: "none" }}
             color="inherit"
           >
