@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
 import { useRouter } from "next/router";
-import { uniq } from "lodash";
+import _ from "lodash";
 
 export default function Users() {
   const router = useRouter();
@@ -66,7 +66,7 @@ export default function Users() {
   }
 
   const uniqueMailboxTypes = Object.fromEntries(
-    uniq(_.map(mailboxes, "RecipientTypeDetails")).map((e) => [e, e])
+    _.uniq(_.map(mailboxes, "RecipientTypeDetails")).map((e) => [e, e])
   );
 
   const columns = [

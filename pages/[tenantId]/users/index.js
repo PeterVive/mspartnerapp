@@ -9,7 +9,7 @@ import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
 import { Check, Close } from "@mui/icons-material/";
 import { useRouter } from "next/router";
-import { uniq } from "lodash";
+import _ from "lodash";
 
 export default function Users() {
   const router = useRouter();
@@ -70,7 +70,7 @@ export default function Users() {
   }
 
   const uniqueUserTypes = Object.fromEntries(
-    uniq(_.map(users, "userType")).map((e) => [e, e])
+    _.uniq(_.map(users, "userType")).map((e) => [e, e])
   );
 
   const columns = [
