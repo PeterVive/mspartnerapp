@@ -48,7 +48,10 @@ export default function Sidebar() {
         <List
           sx={{ bgcolor: "background.paper" }}
           subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
+            <ListSubheader
+              component="div"
+              id="identity-and-management-list-subheader"
+            >
               Identity and management
             </ListSubheader>
           }
@@ -58,61 +61,67 @@ export default function Sidebar() {
             style={{ textDecoration: "none" }}
             color="inherit"
           >
-            <ListItem disablePadding>
-              <ListItemButton
-                disabled={tenant ? false : true}
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
-              >
-                <ListItemIcon>
-                  <Person />
-                </ListItemIcon>
-                <ListItemText primary={"Users"} />
-              </ListItemButton>
-            </ListItem>
+            <ul>
+              <ListItem disablePadding>
+                <ListItemButton
+                  disabled={tenant ? false : true}
+                  selected={selectedIndex === 0}
+                  onClick={(event) => handleListItemClick(event, 0)}
+                >
+                  <ListItemIcon>
+                    <Person />
+                  </ListItemIcon>
+                  <ListItemText primary={"Users"} />
+                </ListItemButton>
+              </ListItem>
+            </ul>
           </Link>
           <Link
             href={tenant ? `/${tenant.customerId}/groups` : "#"}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
-            <ListItem disablePadding>
-              <ListItemButton
-                disabled={tenant ? false : true}
-                selected={selectedIndex === 1}
-                onClick={(event) => handleListItemClick(event, 1)}
-              >
-                <ListItemIcon>
-                  <Group />
-                </ListItemIcon>
-                <ListItemText primary={"Groups"} />
-              </ListItemButton>
-            </ListItem>
+            <ul>
+              <ListItem disablePadding>
+                <ListItemButton
+                  disabled={tenant ? false : true}
+                  selected={selectedIndex === 1}
+                  onClick={(event) => handleListItemClick(event, 1)}
+                >
+                  <ListItemIcon>
+                    <Group />
+                  </ListItemIcon>
+                  <ListItemText primary={"Groups"} />
+                </ListItemButton>
+              </ListItem>
+            </ul>
           </Link>
           <Link
             href={tenant ? `/${tenant.customerId}/domains` : "#"}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
-            <ListItem disablePadding>
-              <ListItemButton
-                disabled={tenant ? false : true}
-                selected={selectedIndex === 2}
-                onClick={(event) => handleListItemClick(event, 2)}
-              >
-                <ListItemIcon>
-                  <Language />
-                </ListItemIcon>
-                <ListItemText primary={"Domains"} />
-              </ListItemButton>
-            </ListItem>
+            <ul>
+              <ListItem disablePadding>
+                <ListItemButton
+                  disabled={tenant ? false : true}
+                  selected={selectedIndex === 2}
+                  onClick={(event) => handleListItemClick(event, 2)}
+                >
+                  <ListItemIcon>
+                    <Language />
+                  </ListItemIcon>
+                  <ListItemText primary={"Domains"} />
+                </ListItemButton>
+              </ListItem>
+            </ul>
           </Link>
         </List>
         <Divider />
         <List
           sx={{ bgcolor: "background.paper" }}
           subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
+            <ListSubheader component="div" id="exchange-online-list-subheader">
               Exchange Online
             </ListSubheader>
           }
@@ -122,18 +131,20 @@ export default function Sidebar() {
             style={{ textDecoration: "none" }}
             color="inherit"
           >
-            <ListItem disablePadding>
-              <ListItemButton
-                disabled={tenant ? false : true}
-                selected={selectedIndex === 3}
-                onClick={(event) => handleListItemClick(event, 3)}
-              >
-                <ListItemIcon>
-                  <Mail />
-                </ListItemIcon>
-                <ListItemText primary={"Mailboxes"} />
-              </ListItemButton>
-            </ListItem>
+            <ul>
+              <ListItem disablePadding>
+                <ListItemButton
+                  disabled={tenant ? false : true}
+                  selected={selectedIndex === 3}
+                  onClick={(event) => handleListItemClick(event, 3)}
+                >
+                  <ListItemIcon>
+                    <Mail />
+                  </ListItemIcon>
+                  <ListItemText primary={"Mailboxes"} />
+                </ListItemButton>
+              </ListItem>
+            </ul>
           </Link>
           <Link
             href={
@@ -144,18 +155,20 @@ export default function Sidebar() {
             style={{ textDecoration: "none" }}
             color="inherit"
           >
-            <ListItem disablePadding>
-              <ListItemButton
-                disabled={tenant ? false : true}
-                selected={selectedIndex === 4}
-                onClick={(event) => handleListItemClick(event, 4)}
-              >
-                <ListItemIcon>
-                  <Engineering />
-                </ListItemIcon>
-                <ListItemText primary={"Exchange Online Configuration"} />
-              </ListItemButton>
-            </ListItem>
+            <ul>
+              <ListItem disablePadding>
+                <ListItemButton
+                  disabled={tenant ? false : true}
+                  selected={selectedIndex === 4}
+                  onClick={(event) => handleListItemClick(event, 4)}
+                >
+                  <ListItemIcon>
+                    <Engineering />
+                  </ListItemIcon>
+                  <ListItemText primary={"Exchange Online Configuration"} />
+                </ListItemButton>
+              </ListItem>
+            </ul>
           </Link>
         </List>
       </Box>

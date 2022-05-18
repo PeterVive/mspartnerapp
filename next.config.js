@@ -3,4 +3,12 @@ module.exports = {
   experimental: {
     emotion: true,
   },
+  async headers() {
+    return [
+      {
+        key: "X-Content-Type-Options",
+        value: "nosniff",
+      },
+    ];
+  },
 };
