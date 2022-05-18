@@ -47,7 +47,14 @@ export default function Users() {
 
   const columns = [
     { title: "Domain name", field: "id" },
-    { title: "Verified", field: "isVerified" },
+    {
+      title: "Verified",
+      field: "isVerified",
+      lookup: {
+        true: "Yes",
+        false: "No",
+      },
+    },
   ];
 
   let content;

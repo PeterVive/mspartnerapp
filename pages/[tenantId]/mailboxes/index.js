@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
 import { useRouter } from "next/router";
+import { uniq } from "lodash";
 
 export default function Users() {
   const router = useRouter();
@@ -41,19 +42,19 @@ export default function Users() {
     }
   });
 
-  let { data, error } = useSWR(
+  let { data: mailboxes, error } = useSWR(
     tenant ? `/api/tenants/${tenant.customerId}/mailboxes` : null
   );
 
-  if (data) {
+  if (mailboxes) {
     // Remove DiscoverySearchMailbox
-    data = data.filter(
+    mailboxes = mailboxes.filter(
       (mailbox) =>
         !mailbox.UserPrincipalName.startsWith("DiscoverySearchMailbox")
     );
 
     // Convert alias data to more table-friendly format
-    data.forEach((mailbox, index) => {
+    mailboxes.forEach((mailbox, index) => {
       const aliasList = [];
       mailbox.EmailAddresses.forEach((alias) => {
         if (alias.startsWith("smtp:")) {
@@ -64,11 +65,19 @@ export default function Users() {
     });
   }
 
+  const uniqueMailboxTypes = Object.fromEntries(
+    uniq(_.map(mailboxes, "RecipientTypeDetails")).map((e) => [e, e])
+  );
+
   const columns = [
     { title: "UPN", field: "UserPrincipalName" },
     { title: "Display name", field: "DisplayName" },
     { title: "Alias", field: "Alias" },
-    { title: "Type", field: "RecipientTypeDetails" },
+    {
+      title: "Type",
+      field: "RecipientTypeDetails",
+      lookup: uniqueMailboxTypes,
+    },
   ];
 
   let content;
@@ -94,7 +103,7 @@ export default function Users() {
         </Head>
         <CommonTable
           title={"Mailboxes"}
-          data={data}
+          data={mailboxes}
           columns={columns}
           error={error}
           exportFileName={tenant.displayName}

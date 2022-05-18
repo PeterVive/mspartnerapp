@@ -41,13 +41,13 @@ export default function Users() {
     }
   });
 
-  const { data, error } = useSWR(
+  const { data: groups, error } = useSWR(
     tenant ? `/api/tenants/${tenant.customerId}/groups` : null
   );
 
-  if (data) {
+  if (groups) {
     // Detect group type
-    data.forEach((group) => {
+    groups.forEach((group) => {
       if (group.groupTypes.includes("Unified")) {
         group.foundGroupType = "Microsoft 365";
       } else if (group.mailEnabled == false && group.securityEnabled == true) {
@@ -63,7 +63,16 @@ export default function Users() {
   const columns = [
     { title: "Display name", field: "displayName" },
     { title: "Mail", field: "mail" },
-    { title: "Type", field: "foundGroupType" },
+    {
+      title: "Type",
+      field: "foundGroupType",
+      lookup: {
+        "Microsoft 365": "Microsoft 365",
+        Security: "Security",
+        "Mail-enabled security": "Mail-enabled security",
+        Distribution: "Distribution",
+      },
+    },
   ];
 
   let content;
@@ -89,7 +98,7 @@ export default function Users() {
         </Head>
         <CommonTable
           title={"Groups"}
-          data={data}
+          data={groups}
           columns={columns}
           error={error}
           exportFileName={tenant.displayName}

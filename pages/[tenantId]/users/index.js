@@ -7,8 +7,9 @@ import { Products } from "../../../utils/SKUList";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
-import { CheckBox, CheckBoxOutlineBlank } from "@mui/icons-material/";
+import { Check, Close } from "@mui/icons-material/";
 import { useRouter } from "next/router";
+import { uniq } from "lodash";
 
 export default function Users() {
   const router = useRouter();
@@ -48,8 +49,13 @@ export default function Users() {
   );
 
   if (users) {
-    // Convert license data to more table-friendly format
+    // Fix various properties for proper table usage.
     users.forEach((user) => {
+      // Set undefined or null to false, for table lookup.
+      if (!user.onPremisesSyncEnabled) {
+        user.onPremisesSyncEnabled = false;
+      }
+      // Combine licensing array to a string.
       const allLicenses = [];
       user.assignedLicenses.forEach((assignedLicense) => {
         if (assignedLicense.skuId) {
@@ -63,15 +69,27 @@ export default function Users() {
     });
   }
 
+  const uniqueUserTypes = Object.fromEntries(
+    uniq(_.map(users, "userType")).map((e) => [e, e])
+  );
+
   const columns = [
     {
       title: "Account enabled",
       field: "accountEnabled",
       hidden: true,
-      render: (rowData) =>
-        rowData.accountEnabled ? <CheckBox /> : <CheckBoxOutlineBlank />,
+      render: (rowData) => (rowData.accountEnabled ? <Check /> : <Close />),
+      lookup: {
+        true: "Yes",
+        false: "No",
+      },
     },
-    { title: "Type", field: "userType", hidden: true },
+    {
+      title: "Type",
+      field: "userType",
+      hidden: true,
+      lookup: uniqueUserTypes,
+    },
     {
       title: "UPN",
       field: "userPrincipalName",
@@ -88,7 +106,11 @@ export default function Users() {
       title: "AD-Synced",
       field: "onPremisesSyncEnabled",
       render: (rowData) =>
-        rowData.onPremisesSyncEnabled ? <CheckBox /> : <CheckBoxOutlineBlank />,
+        rowData.onPremisesSyncEnabled ? <Check /> : <Close />,
+      lookup: {
+        true: "Yes",
+        false: "No",
+      },
     },
   ];
 
