@@ -6,8 +6,13 @@ module.exports = {
   async headers() {
     return [
       {
-        key: "X-Content-Type-Options",
-        value: "nosniff",
+        source: "/:path*",
+        headers: [
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+        ],
       },
     ];
   },
