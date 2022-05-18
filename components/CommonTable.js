@@ -47,45 +47,6 @@ export default function CommonTable({
         ],
         exportAllData: true,
       }}
-      components={{
-        FilterRow: (rowProps) => {
-          const { columns, onFilterChanged } = rowProps;
-
-          return (
-            <>
-              <tr>
-                {columns.map((col) => {
-                  if (col.field) {
-                    return (
-                      <td key={col.tableData.id}>
-                        <Box sx={{ display: "flex", alignItems: "flex-end" }}>
-                          <TextField
-                            id={col.field}
-                            onChange={(e) => {
-                              console.log(e.target.id, e.target.value);
-                              onFilterChanged(col.tableData.id, e.target.value);
-                            }}
-                            placeholder={"Filter.."}
-                            InputProps={{
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <FilterAlt />
-                                </InputAdornment>
-                              ),
-                            }}
-                            sx={{ mb: 1, ml: 1 }}
-                            variant="standard"
-                          />
-                        </Box>
-                      </td>
-                    );
-                  }
-                })}
-              </tr>
-            </>
-          );
-        },
-      }}
     />
   );
 }
