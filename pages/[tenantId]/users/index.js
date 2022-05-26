@@ -7,7 +7,7 @@ import { Products } from "../../../utils/SKUList";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
-import { Check, Close } from "@mui/icons-material/";
+import { Check, Close, Filter } from "@mui/icons-material/";
 import { useRouter } from "next/router";
 import _ from "lodash";
 
@@ -48,6 +48,8 @@ export default function Users() {
     tenant ? `/api/tenants/${tenant.customerId}/users` : null
   );
 
+  const licenseCache = [];
+
   if (users) {
     // Fix various properties for proper table usage.
     users.forEach((user) => {
@@ -59,19 +61,39 @@ export default function Users() {
       const allLicenses = [];
       user.assignedLicenses.forEach((assignedLicense) => {
         if (assignedLicense.skuId) {
-          const product = Products.find(
+          let product;
+          product = licenseCache.find(
             (product) => product.GUID === assignedLicense.skuId
           );
+          if (!product) {
+            product = Products.find(
+              (product) => product.GUID === assignedLicense.skuId
+            );
+            licenseCache.push(product);
+          }
           allLicenses.push(product.Product_Display_Name);
         }
       });
-      user.displayableLicenses = allLicenses.join(" + ");
+      user.displayableLicenses = allLicenses;
+      user.licenseString = allLicenses.join(" + ");
     });
   }
 
+  // Create lookup object of user types
   const uniqueUserTypes = Object.fromEntries(
     _.uniq(_.map(users, "userType")).map((e) => [e, e])
   );
+
+  // Use license cache to create lookup object with license names
+  let uniqueLicenses = licenseCache.map(
+    (license) => license.Product_Display_Name
+  );
+
+  // Convert lookup object to correct format and add unlicensed option
+  uniqueLicenses = uniqueLicenses.reduce((accumulator, value) => {
+    return { ...accumulator, [value]: [value][0] };
+  }, {});
+  uniqueLicenses[""] = "Unlicensed";
 
   const columns = [
     {
@@ -101,6 +123,40 @@ export default function Users() {
     {
       title: "Licenses",
       field: "displayableLicenses",
+      lookup: uniqueLicenses,
+      customFilterAndSearch: (filter, rowData) => {
+        let filterTest = false;
+        // If no filter is selected
+        if (filter.length == 0) {
+          return true;
+        }
+        filter.forEach((appliedFilter) => {
+          // If unlicensed filter selected
+          if (appliedFilter == "" && rowData.displayableLicenses.length == 0) {
+            filterTest = true;
+          }
+          // Actual license filtering
+          if (rowData.displayableLicenses.includes(appliedFilter)) {
+            filterTest = true;
+          }
+        });
+        return filterTest;
+      },
+      render: (rowData) => (
+        <div>
+          {rowData.displayableLicenses.length > 0
+            ? rowData.displayableLicenses.join(" + ")
+            : "Unlicensed"}
+        </div>
+      ),
+      exportTransformer: (row) => {
+        // Find the user object of the current row.
+        var foundUser = users.find((user) => {
+          return user.userPrincipalName === row.userPrincipalName;
+        });
+        // Return the license string instead of displayableLicenses array
+        return (row.displayableLicenses = foundUser.licenseString);
+      },
     },
     {
       title: "AD-Synced",

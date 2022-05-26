@@ -17,7 +17,7 @@ import {
   Language,
   Engineering,
 } from "@mui/icons-material";
-import TenantSearch from "../TenantSearch";
+import TenantSelect from "../TenantSelect";
 import Link from "../Link";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -43,7 +43,7 @@ export default function Sidebar() {
       }}
     >
       <Toolbar />
-      <TenantSearch />
+      <TenantSelect />
       <Box sx={{ overflow: "auto" }}>
         <List
           sx={{ bgcolor: "background.paper" }}

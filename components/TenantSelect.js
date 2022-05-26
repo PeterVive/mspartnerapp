@@ -5,7 +5,7 @@ import fetcher from "../utils/fetcher";
 import { useSelector, useDispatch } from "react-redux";
 import { setTenant } from "../features/tenantSlice";
 
-export default function TenantSearch() {
+export default function TenantSelect() {
   const tenant = useSelector((state) => state.tenant.value);
   const dispatch = useDispatch();
 
