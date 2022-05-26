@@ -1,21 +1,20 @@
 import { useEffect } from "react";
-import { Typography } from "@mui/material";
+import { Paper, Grid, Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { setTenant } from "../../../../features/tenantSlice";
 import useSWR from "swr";
-import { Products } from "../../../../utils/SKUList";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import CommonTable from "../../../../components/CommonTable";
-import { Check, Close, Edit } from "@mui/icons-material/";
+
 import { useRouter } from "next/router";
 import _ from "lodash";
+import UserEdit from "../../../../components/UserEdit";
 
 export default function Users() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { tenantId, userid } = router.query;
-  console.log(userid);
+
   const { data: session, status } = useSession({
     required: true,
   });
@@ -44,13 +43,24 @@ export default function Users() {
     }
   });
 
-  const { data: user, error } = useSWR(
+  const { data: user, error: userError } = useSWR(
     tenant ? `/api/tenants/${tenant.customerId}/users/${userid}` : null
   );
 
-  if (!user) {
+  const { data: domains, error: domainError } = useSWR(
+    tenant ? `/api/tenants/${tenant.customerId}/domains` : null
+  );
+
+  if (!user || !domains) {
     return <div>loading..</div>;
   }
+
+  const verifiedDomains = [];
+  domains.forEach(function (domain) {
+    if (domain.isVerified) {
+      verifiedDomains.push(domain);
+    }
+  });
 
   let content;
 
@@ -73,8 +83,20 @@ export default function Users() {
             key="title"
           />
         </Head>
-        <div>Display name: {user.displayName}</div>
-        <div>User Principal Name (UPN): {user.userPrincipalName}</div>
+        <Grid container spacing={2}>
+          <Grid item xs={8}>
+            <Typography variant="h4" sx={{ ml: 2, mb: 2 }}>
+              User information
+            </Typography>
+            <UserEdit tenant={tenant} user={user} domains={domains} />
+          </Grid>
+          <Grid item xs={4}>
+            <Typography variant="h4" sx={{ ml: 2, mb: 2 }}>
+              Reset password
+            </Typography>
+            <Paper>TODO</Paper>
+          </Grid>
+        </Grid>
       </>
     );
   }
