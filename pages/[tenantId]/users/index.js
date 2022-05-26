@@ -46,7 +46,7 @@ export default function Users() {
 
   const { data: users, error } = useSWR(
     tenant
-      ? `/api/tenants/${tenant.customerId}/users?select=id,userPrincipalName,displayName,assignedLicenses,userType,accountEnabled`
+      ? `/api/tenants/${tenant.customerId}/users?select=id,userPrincipalName,displayName,assignedLicenses,userType,accountEnabled,onPremisesSyncEnabled`
       : null
   );
 
