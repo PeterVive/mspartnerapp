@@ -42,7 +42,9 @@ export default function Users() {
   });
 
   const { data: groups, error } = useSWR(
-    tenant ? `/api/tenants/${tenant.customerId}/groups` : null
+    tenant
+      ? `/api/tenants/${tenant.customerId}/groups?select=id,displayName,mail,groupTypes`
+      : null
   );
 
   if (groups) {

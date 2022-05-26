@@ -19,9 +19,21 @@ export default async (_, res) => {
     ),
   };
 
+  if (!_.query.filter) {
+    _.query.filter = "";
+  }
+
+  if (!_.query.select) {
+    _.query.select = "";
+  }
+
   const client = Client.initWithMiddleware(clientOptions);
   const groups = [];
-  const response = await client.api(`/groups`).get();
+  const response = await client
+    .api(`/groups`)
+    .select(_.query.select)
+    .filter(_.query.filter)
+    .get();
   let callback = (data) => {
     groups.push(data);
     return true;

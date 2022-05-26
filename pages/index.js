@@ -1,11 +1,22 @@
 import { Typography, Box } from "@mui/material/";
 import Head from "next/head";
 import { useSession } from "next-auth/react";
+import useSWR from "swr";
 
 export default function Index() {
   const { data: session, status } = useSession({
     required: true,
   });
+
+  // Load tenantData if Tenant is not set in store, but is in query parameter.
+  const { data: tenantData, error: tenantError } = useSWR(
+    `/api/partner/analyics`
+  );
+
+  if (tenantData) {
+    console.log(tenantData);
+  }
+
   return (
     <Box>
       <Head>
