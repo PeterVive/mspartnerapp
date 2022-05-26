@@ -7,7 +7,7 @@ import { Products } from "../../../utils/SKUList";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
-import { Check, Close, Filter } from "@mui/icons-material/";
+import { Check, Close, Edit } from "@mui/icons-material/";
 import { useRouter } from "next/router";
 import _ from "lodash";
 
@@ -130,16 +130,24 @@ export default function Users() {
         if (filter.length == 0) {
           return true;
         }
-        filter.forEach((appliedFilter) => {
-          // If unlicensed filter selected
-          if (appliedFilter == "" && rowData.displayableLicenses.length == 0) {
-            filterTest = true;
-          }
-          // Actual license filtering
-          if (rowData.displayableLicenses.includes(appliedFilter)) {
-            filterTest = true;
-          }
-        });
+        if (typeof filter === "string") {
+          // This enables global search to use the default mechanism :)
+          return false;
+        } else {
+          filter.forEach((appliedFilter) => {
+            // If unlicensed filter selected
+            if (
+              appliedFilter == "" &&
+              rowData.displayableLicenses.length == 0
+            ) {
+              filterTest = true;
+            }
+            // Actual license filtering
+            if (rowData.displayableLicenses.includes(appliedFilter)) {
+              filterTest = true;
+            }
+          });
+        }
         return filterTest;
       },
       render: (rowData) => (
@@ -170,6 +178,17 @@ export default function Users() {
     },
   ];
 
+  const actions = [
+    {
+      icon: () => <Edit />,
+      tooltip: "Edit User",
+      onClick: (event, rowData) => {
+        const rowJson = JSON.stringify(rowData, null, 2);
+        alert(`Do save operation : ${rowJson}`);
+      },
+    },
+  ];
+
   let content;
 
   if (!tenant) {
@@ -195,6 +214,7 @@ export default function Users() {
           title={"Users"}
           data={users}
           columns={columns}
+          actions={actions}
           error={error}
           exportFileName={tenant.displayName}
         />

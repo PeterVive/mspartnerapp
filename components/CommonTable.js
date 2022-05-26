@@ -7,6 +7,7 @@ export default function CommonTable({
   title,
   data,
   columns,
+  actions,
   error,
   exportFileName,
   ...props
@@ -16,15 +17,16 @@ export default function CommonTable({
       title={title}
       data={data}
       columns={columns}
+      actions={actions}
       isLoading={!data}
       error={error}
       style={{ overflowWrap: "break-word" }}
       options={{
-        tableLayout: "fixed",
         columnResizable: true,
         columnsButton: true,
         filtering: true,
         pageSize: 10,
+        actionsColumnIndex: -1,
         exportMenu: [
           {
             label: "Export PDF",
