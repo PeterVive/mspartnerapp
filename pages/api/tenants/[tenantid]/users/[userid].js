@@ -1,8 +1,10 @@
+/* eslint-disable import/no-anonymous-default-export */
 import { MyAuthenticationProvider } from "../../../../../utils/customAuthProvider";
 import { Client } from "@microsoft/microsoft-graph-client";
 import { getSession } from "next-auth/react";
 
-const user = () => async (_, res) => {
+export default async (_, res) => {
+  console.log("HUHUSHUSJAMDJKANIKn");
   const session = await getSession({ req: _ });
   if (!session) {
     res.status(401).send({ Error: "Not authorized." });
@@ -18,7 +20,6 @@ const user = () => async (_, res) => {
     ),
   };
   const client = Client.initWithMiddleware(clientOptions);
-
   switch (_.method) {
     case "GET":
       if (!_.query.select) {
@@ -56,4 +57,3 @@ const user = () => async (_, res) => {
       break;
   }
 };
-export default user;

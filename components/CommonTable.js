@@ -49,6 +49,11 @@ export default function CommonTable({
         ],
         exportAllData: true,
       }}
+      localization={{
+        header: {
+          actions: "",
+        },
+      }}
     />
   );
 }

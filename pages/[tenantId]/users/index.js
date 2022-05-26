@@ -183,8 +183,7 @@ export default function Users() {
       icon: () => <Edit />,
       tooltip: "Edit User",
       onClick: (event, rowData) => {
-        const rowJson = JSON.stringify(rowData, null, 2);
-        alert(`Do save operation : ${rowJson}`);
+        router.push(`/${tenantId}/users/${rowData.id}/edit`);
       },
     },
   ];
