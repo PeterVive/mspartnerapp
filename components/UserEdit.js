@@ -10,6 +10,7 @@ import {
   Snackbar,
   Alert,
   FormControl,
+  Tooltip,
 } from "@mui/material";
 import { useState } from "react";
 import { Save } from "@mui/icons-material/";
@@ -17,13 +18,19 @@ import { useFormik } from "formik";
 
 export default function UserEdit({ user, domains, tenant, ...props }) {
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const handleClose = (event, reason) => {
+  const handleCloseError = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-
     setOpenErrorSnackbar(false);
+  };
+  const handleCloseSuccess = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSuccessSnackbar(false);
   };
 
   const formik = useFormik({
@@ -41,6 +48,8 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
         lastName: values.lastName,
         displayName: values.displayName,
       };
+      //
+
       try {
         const response = await fetch(
           `/api/tenants/${tenant.customerId}/users/${user.id}`,
@@ -51,6 +60,8 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
         );
         if (!response.ok) {
           throw await response.json();
+        } else {
+          setOpenSuccessSnackbar(true);
         }
       } catch (error) {
         setSubmitError(error.error);
@@ -69,11 +80,28 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
   return (
     <Paper>
       <Snackbar
+        open={openSuccessSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSuccess}
+      >
+        <Alert
+          onClose={handleCloseSuccess}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Sucessfully saved changes
+        </Alert>
+      </Snackbar>
+      <Snackbar
         open={openErrorSnackbar}
         autoHideDuration={6000}
-        onClose={handleClose}
+        onClose={handleCloseError}
       >
-        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
           {submitError}
         </Alert>
       </Snackbar>
@@ -81,60 +109,66 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
         <form onSubmit={formik.handleSubmit}>
           <FormControl>
             <FormGroup row={true}>
-              <TextField
-                id="startUserPrincipalName"
-                label="User principal name"
-                required={true}
-                value={formik.values.startUserPrincipalName}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.startUserPrincipalName &&
-                  formik.errors.startUserPrincipalName
-                }
-                sx={{
-                  mb: 2,
-                  mr: 0,
-                  "& .MuiOutlinedInput-root": {
-                    "& > fieldset": {
-                      borderRight: "none",
-                      borderTopRightRadius: "0px",
-                      borderBottomRightRadius: "0px",
+              <Tooltip title="Cannot be edited. AD-Synced user.">
+                <TextField
+                  id="startUserPrincipalName"
+                  label="User principal name"
+                  required={true}
+                  value={formik.values.startUserPrincipalName}
+                  onChange={formik.handleChange}
+                  disabled={user.onPremisesSyncEnabled ? true : false}
+                  error={
+                    formik.touched.startUserPrincipalName &&
+                    formik.errors.startUserPrincipalName
+                  }
+                  sx={{
+                    mb: 2,
+                    mr: 0,
+                    "& .MuiOutlinedInput-root": {
+                      "& > fieldset": {
+                        borderRight: "none",
+                        borderTopRightRadius: "0px",
+                        borderBottomRightRadius: "0px",
+                      },
                     },
-                  },
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">@</InputAdornment>
-                  ),
-                }}
-              ></TextField>
-              <TextField
-                id="endUserPrincipalName"
-                select={true}
-                required={true}
-                value={formik.values.endUserPrincipalName}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.endUserPrincipalName &&
-                  formik.errors.endUserPrincipalName
-                }
-                sx={{
-                  mb: 2,
-                  "& .MuiOutlinedInput-root": {
-                    "& > fieldset": {
-                      borderLeft: "none",
-                      borderTopLeftRadius: "0px",
-                      borderBottomLeftRadius: "0px",
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">@</InputAdornment>
+                    ),
+                  }}
+                ></TextField>
+              </Tooltip>
+              <Tooltip title="Cannot be edited. AD-Synced user.">
+                <TextField
+                  id="endUserPrincipalName"
+                  select={true}
+                  required={true}
+                  value={formik.values.endUserPrincipalName}
+                  onChange={formik.handleChange}
+                  disabled={user.onPremisesSyncEnabled ? true : false}
+                  error={
+                    formik.touched.endUserPrincipalName &&
+                    formik.errors.endUserPrincipalName
+                  }
+                  sx={{
+                    mb: 2,
+                    "& .MuiOutlinedInput-root": {
+                      "& > fieldset": {
+                        borderLeft: "none",
+                        borderTopLeftRadius: "0px",
+                        borderBottomLeftRadius: "0px",
+                      },
                     },
-                  },
-                }}
-              >
-                {verifiedDomains.map((domain, i) => (
-                  <MenuItem value={domain.id} key={i}>
-                    {domain.id}
-                  </MenuItem>
-                ))}{" "}
-              </TextField>
+                  }}
+                >
+                  {verifiedDomains.map((domain, i) => (
+                    <MenuItem value={domain.id} key={i}>
+                      {domain.id}
+                    </MenuItem>
+                  ))}{" "}
+                </TextField>
+              </Tooltip>
             </FormGroup>
             <FormGroup row={true}>
               <TextField
