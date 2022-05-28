@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
-import { Products } from "../../../utils/SKUList";
+import Products from "../../../utils/SKUList.json";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
@@ -14,6 +14,7 @@ import type {
   AssignedLicense,
   User,
 } from "@microsoft/microsoft-graph-types-beta";
+import { string } from "yup";
 
 type ExtendedUser = Partial<User> & { displayableLicenses: string[] | string };
 
@@ -56,15 +57,15 @@ export default function Users() {
       : null
   );
 
-  interface cachedLicense {
+  type cachedLicense = {
     GUID: string;
     Product_Display_Name: string;
-  }
+  };
   const licenseCache: cachedLicense[] = [];
 
   if (users) {
     // Fix various properties for proper table usage.
-    users.forEach((user: ExtendedUser) => {
+    users.forEach((user) => {
       // Set undefined or null to false, for table lookup.
       if (!user.onPremisesSyncEnabled) {
         user.onPremisesSyncEnabled = false;
@@ -72,20 +73,20 @@ export default function Users() {
       // Combine licensing array to a string.
       const allLicenses: string[] = [];
       if (user.assignedLicenses) {
-        user.assignedLicenses.forEach((assignedLicense: AssignedLicense) => {
+        user.assignedLicenses.forEach((assignedLicense) => {
           if (assignedLicense.skuId) {
-            let product: cachedLicense | undefined;
+            let product;
             product = licenseCache.find(
-              (product) => product.GUID === assignedLicense.skuId
+              (product: any) => product.GUID === assignedLicense.skuId
             );
             if (!product) {
               product = Products.find(
                 (product) => product.GUID === assignedLicense.skuId
               );
-              if (product) {
-                licenseCache.push(product);
-                allLicenses.push(product.Product_Display_Name);
-              }
+            }
+            if (product) {
+              licenseCache.push(product);
+              allLicenses.push(product.Product_Display_Name);
             }
           }
         });
@@ -101,7 +102,7 @@ export default function Users() {
 
   // Use license cache to create lookup object with license names
   let uniqueLicenses: any = licenseCache.map(
-    (license) => license.Product_Display_Name
+    (license: cachedLicense) => license.Product_Display_Name
   );
 
   // Convert lookup object to correct format and add unlicensed option
@@ -163,6 +164,7 @@ export default function Users() {
             }
             // Actual license filtering
             if (rowData.displayableLicenses.includes(appliedFilter)) {
+              console.log(rowData.displayableLicenses);
               filterTest = true;
             }
           });
@@ -171,8 +173,8 @@ export default function Users() {
       },
       render: (rowData: ExtendedUser) => (
         <div>
-          {rowData.displayableLicenses?.length > 0 &&
-          Array.isArray(rowData.displayableLicenses)
+          {Array.isArray(rowData.displayableLicenses) &&
+          rowData.displayableLicenses.length > 0
             ? rowData.displayableLicenses.join(" + ")
             : "Unlicensed"}
         </div>

@@ -32,7 +32,7 @@ export default function TenantSelect() {
   return !data ? (
     <Skeleton
       variant="rectangular"
-      sx={{ marginTop: 2, marginLeft: 1, marginRight: 1 }}
+      sx={{ marginTop: 2, overflow: "hidden" }}
       width="100%"
     >
       <TextField fullWidth label="Select a tenant" />

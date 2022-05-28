@@ -125,7 +125,13 @@ export default function UserEdit({ user, domains, tenant }: UserEditProps) {
         <form onSubmit={formik.handleSubmit}>
           <FormControl>
             <FormGroup row={true}>
-              <Tooltip title="Cannot be edited. AD-Synced user.">
+              <Tooltip
+                title={
+                  user.onPremisesSyncEnabled
+                    ? "Cannot be edited. AD-Synced user."
+                    : ""
+                }
+              >
                 <TextField
                   id="startUserPrincipalName"
                   label="User principal name"
@@ -151,7 +157,13 @@ export default function UserEdit({ user, domains, tenant }: UserEditProps) {
                   }}
                 ></TextField>
               </Tooltip>
-              <Tooltip title="Cannot be edited. AD-Synced user.">
+              <Tooltip
+                title={
+                  user.onPremisesSyncEnabled
+                    ? "Cannot be edited. AD-Synced user."
+                    : ""
+                }
+              >
                 <TextField
                   id="endUserPrincipalName"
                   select={true}
