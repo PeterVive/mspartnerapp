@@ -14,6 +14,7 @@ import {
   Person,
   Group,
   Mail,
+  Devices,
   Language,
   Engineering,
 } from "@mui/icons-material";
@@ -115,6 +116,37 @@ export default function Sidebar() {
         <List
           sx={{ bgcolor: "background.paper" }}
           subheader={
+            <ListSubheader
+              component="div"
+              id="endpoint-management-list-subheader"
+            >
+              Endpoint Management
+            </ListSubheader>
+          }
+        >
+          <Link
+            href={tenant ? `/${tenant.customerId}/devices` : "#"}
+            style={{ textDecoration: "none" }}
+            color="inherit"
+          >
+            <ListItem disablePadding>
+              <ListItemButton
+                disabled={tenant ? false : true}
+                selected={selectedIndex === 3}
+                onClick={(event) => handleListItemClick(event, 3)}
+              >
+                <ListItemIcon>
+                  <Devices />
+                </ListItemIcon>
+                <ListItemText primary={"Devices"} />
+              </ListItemButton>
+            </ListItem>
+          </Link>
+        </List>
+        <Divider />
+        <List
+          sx={{ bgcolor: "background.paper" }}
+          subheader={
             <ListSubheader component="div" id="exchange-online-list-subheader">
               Exchange Online
             </ListSubheader>
@@ -128,8 +160,8 @@ export default function Sidebar() {
             <ListItem disablePadding>
               <ListItemButton
                 disabled={tenant ? false : true}
-                selected={selectedIndex === 3}
-                onClick={(event) => handleListItemClick(event, 3)}
+                selected={selectedIndex === 4}
+                onClick={(event) => handleListItemClick(event, 4)}
               >
                 <ListItemIcon>
                   <Mail />
@@ -150,8 +182,8 @@ export default function Sidebar() {
             <ListItem disablePadding>
               <ListItemButton
                 disabled={tenant ? false : true}
-                selected={selectedIndex === 4}
-                onClick={(event) => handleListItemClick(event, 4)}
+                selected={selectedIndex === 5}
+                onClick={(event) => handleListItemClick(event, 5)}
               >
                 <ListItemIcon>
                   <Engineering />

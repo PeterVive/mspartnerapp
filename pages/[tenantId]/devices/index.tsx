@@ -7,8 +7,7 @@ import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { Contract } from "@microsoft/microsoft-graph-types-beta";
-import { Domain } from "domain";
+import { Contract, Device } from "@microsoft/microsoft-graph-types-beta";
 
 export default function Users() {
   const router = useRouter();
@@ -34,7 +33,7 @@ export default function Users() {
 
     // When tenant state in store is set, push the current tenant to URL.
     if (tenant) {
-      const desiredURL = `/${tenant.customerId}/domains`;
+      const desiredURL = `/${tenant.customerId}/devices`;
       if (router.asPath !== desiredURL) {
         router.push(desiredURL, undefined, {
           shallow: true,
@@ -43,18 +42,21 @@ export default function Users() {
     }
   });
 
-  const { data: domains, error } = useSWR<Domain[]>(
-    tenant ? `/api/tenants/${tenant.customerId}/domains` : null
+  const { data: devices, error } = useSWR<Device[]>(
+    tenant ? `/api/tenants/${tenant.customerId}/devices` : null
   );
 
   const columns = [
-    { title: "Domain name", field: "id" },
+    { title: "Display name", field: "displayName" },
+    { title: "Manufacturer", field: "manufacturer" },
+    { title: "Model", field: "model" },
     {
-      title: "Verified",
-      field: "isVerified",
+      title: "Enrollment type",
+      field: "enrollmentType",
       lookup: {
-        true: "Yes",
-        false: "No",
+        OnPremiseCoManaged: "Azure AD Hybrid-joined",
+        AzureDomainJoined: "Azure AD Joined",
+        null: "Registrered",
       },
     },
   ];
@@ -73,18 +75,18 @@ export default function Users() {
     content = (
       <>
         <Head>
-          <title>{tenant.displayName} - Domains</title>
+          <title>{tenant.displayName} - devices</title>
           <meta
             property="og:title"
-            content={tenant.displayName + " Domains"}
+            content={tenant.displayName + " devices"}
             key="title"
           />
         </Head>
         <CommonTable
-          title={"Domains"}
-          data={domains ? domains : []}
+          title={"Devices"}
+          data={devices ? devices : []}
           columns={columns}
-          isLoading={!domains}
+          isLoading={!devices}
           error={error}
           exportFileName={tenant.displayName!.toString()}
         />
