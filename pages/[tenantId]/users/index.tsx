@@ -164,7 +164,6 @@ export default function Users() {
             }
             // Actual license filtering
             if (rowData.displayableLicenses.includes(appliedFilter)) {
-              console.log(rowData.displayableLicenses);
               filterTest = true;
             }
           });
