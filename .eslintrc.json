@@ -1,11 +1,4 @@
 {
   "extends": "next/core-web-vitals",
-  "rules": {
-    "no-restricted-imports": [
-      "error",
-      {
-        "patterns": ["@mui/*/*/*", "!@mui/material/test-utils/*"]
-      }
-    ]
-  }
+  "rules": {}
 }
