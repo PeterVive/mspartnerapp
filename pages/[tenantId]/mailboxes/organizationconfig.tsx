@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { Contract } from "@microsoft/microsoft-graph-types-beta";
 import { OrganizationConfig } from "../../../utils/customGraphTypes";
 
-export default function OrganizationConfig() {
+export default function OrganizationConfigPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tenantId } = router.query;
