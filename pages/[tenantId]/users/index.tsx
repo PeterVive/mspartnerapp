@@ -88,9 +88,9 @@ export default function Users() {
               }
             }
           }
-          user.displayableLicenses = allLicenses;
         });
       }
+      user.displayableLicenses = allLicenses;
     });
   }
 
