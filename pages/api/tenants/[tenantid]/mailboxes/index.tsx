@@ -1,25 +1,32 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { NextApiRequest, NextApiResponse } from "next";
 import { MyAuthenticationProvider } from "../../../../../utils/customAuthProvider";
-import { Client, PageIterator } from "@microsoft/microsoft-graph-client";
+import {
+  Client,
+  ClientOptions,
+  PageCollection,
+  PageIterator,
+  PageIteratorCallback,
+} from "@microsoft/microsoft-graph-client";
 import { getSession } from "next-auth/react";
 
-export default async (_, res) => {
-  const session = await getSession({ req: _ });
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const session = await getSession({ req });
   if (!session) {
     res.status(401).send({ Error: "Not authorized." });
     return;
   }
 
-  if (!_.query.filter) {
-    _.query.filter = "";
+  if (!req.query.filter) {
+    req.query.filter = "";
   }
 
-  let clientOptions = {
+  let clientOptions: ClientOptions = {
     customHosts: new Set(["outlook.office365.com"]),
     defaultVersion: "beta",
     baseUrl: "https://outlook.office365.com/adminapi/",
     authProvider: new MyAuthenticationProvider(
-      _.query.tenantid,
+      req.query.tenantid,
       ["https://outlook.office365.com/.default"],
       false,
       "a0c73c16-a7e3-4564-9a95-2bdf47383716"
@@ -28,13 +35,13 @@ export default async (_, res) => {
 
   try {
     const client = Client.initWithMiddleware(clientOptions);
-    const mailboxes = [];
-    const response = await client
-      .api(`${_.query.tenantid}/Mailbox`)
-      .filter(_.query.filter)
+    const mailboxes: Object[] = [];
+    const response: PageCollection = await client
+      .api(`${req.query.tenantid}/Mailbox`)
+      .filter(req.query.filter ? req.query.filter[0] : "")
       .get();
 
-    let callback = (data) => {
+    let callback: PageIteratorCallback = (data) => {
       mailboxes.push(data);
       return true;
     };

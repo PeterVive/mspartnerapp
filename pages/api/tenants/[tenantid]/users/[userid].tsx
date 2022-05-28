@@ -1,54 +1,54 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { NextApiRequest, NextApiResponse } from "next";
 import { MyAuthenticationProvider } from "../../../../../utils/customAuthProvider";
-import { Client } from "@microsoft/microsoft-graph-client";
+import { Client, ClientOptions } from "@microsoft/microsoft-graph-client";
 import { getSession } from "next-auth/react";
+import { User } from "@microsoft/microsoft-graph-types-beta";
 
-export default async (_, res) => {
-  const session = await getSession({ req: _ });
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const session = await getSession({ req });
   if (!session) {
     res.status(401).send({ Error: "Not authorized." });
     return;
   }
 
-  let clientOptions = {
+  let clientOptions: ClientOptions = {
     defaultVersion: "beta",
     authProvider: new MyAuthenticationProvider(
-      _.query.tenantid,
+      req.query.tenantid,
       ["https://graph.microsoft.com/.default"],
       false
     ),
   };
   const client = Client.initWithMiddleware(clientOptions);
-  console.log(_.method);
-  switch (_.method) {
+
+  switch (req.method) {
     case "GET":
-      if (!_.query.select) {
-        _.query.select = "";
+      if (!req.query.select) {
+        req.query.select = "";
       }
       try {
-        const user = await client
-          .api(`/users/${_.query.userid}`)
-          .select(_.query.select)
+        const user: User = await client
+          .api(`/users/${req.query.userid}`)
+          .select(req.query.select)
           .get();
 
         res.status(200).json(user);
         break;
-      } catch (error) {
+      } catch (error: any) {
         res.status(500).send({
           errorMessage: error.message,
         });
       }
       break;
     case "PATCH":
-      console.log("PATCHING");
-      console.log(_.body);
       try {
         const response = await client
-          .api(`/users/${_.query.userid}`)
-          .patch(_.body);
+          .api(`/users/${req.query.userid}`)
+          .patch(req.body);
         res.status(200).json(response);
         break;
-      } catch (error) {
+      } catch (error: any) {
         console.log(error.message);
         res.status(500).json({ error: error.message });
       }

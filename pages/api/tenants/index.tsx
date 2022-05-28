@@ -1,10 +1,17 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { NextApiRequest, NextApiResponse } from "next";
 import { MyAuthenticationProvider } from "../../../utils/customAuthProvider";
-import { Client, PageIterator } from "@microsoft/microsoft-graph-client";
+import {
+  Client,
+  PageCollection,
+  PageIterator,
+  PageIteratorCallback,
+} from "@microsoft/microsoft-graph-client";
 import { getSession } from "next-auth/react";
+import { Contract } from "@microsoft/microsoft-graph-types-beta";
 
-export default async (_, res) => {
-  const session = await getSession({ req: _ });
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const session = await getSession({ req });
   if (!session) {
     res.status(401).send({ Error: "Not authorized." });
     return;
@@ -20,9 +27,9 @@ export default async (_, res) => {
   };
 
   const client = Client.initWithMiddleware(clientOptions);
-  const contracts = [];
-  const response = await client.api(`/contracts`).get();
-  let callback = (data) => {
+  const contracts: Contract[] = [];
+  const response: PageCollection = await client.api(`/contracts`).get();
+  let callback: PageIteratorCallback = (data: Contract) => {
     contracts.push(data);
     return true;
   };

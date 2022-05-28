@@ -1,49 +1,57 @@
 /* eslint-disable import/no-anonymous-default-export */
+import { NextApiRequest, NextApiResponse } from "next";
 import { MyAuthenticationProvider } from "../../../../../utils/customAuthProvider";
-import { Client, PageIterator } from "@microsoft/microsoft-graph-client";
+import {
+  Client,
+  ClientOptions,
+  PageCollection,
+  PageIterator,
+  PageIteratorCallback,
+} from "@microsoft/microsoft-graph-client";
 import { getSession } from "next-auth/react";
+import { User } from "@microsoft/microsoft-graph-types-beta";
 
-export default async (_, res) => {
-  const session = await getSession({ req: _ });
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const session = await getSession({ req });
   if (!session) {
     res.status(401).send({ Error: "Not authorized." });
     return;
   }
 
-  let clientOptions = {
+  let clientOptions: ClientOptions = {
     defaultVersion: "beta",
     authProvider: new MyAuthenticationProvider(
-      _.query.tenantid,
+      req.query.tenantid,
       ["https://graph.microsoft.com/.default"],
       false
     ),
   };
   const client = Client.initWithMiddleware(clientOptions);
 
-  switch (_.method) {
+  switch (req.method) {
     case "GET":
-      if (!_.query.filter) {
-        _.query.filter = "";
+      if (!req.query.filter) {
+        req.query.filter = "";
       }
 
-      if (!_.query.select) {
-        _.query.select = "";
+      if (!req.query.select) {
+        req.query.select = "";
       }
       try {
-        const users = [];
-        const response = await client
+        const users: User[] = [];
+        const response: PageCollection = await client
           .api("/users")
-          .select(_.query.select)
-          .filter(_.query.filter)
+          .filter(req.query.filter ? req.query.filter[0] : "")
+          .select(req.query.select)
           .get();
-        let callback = (data) => {
+        let callback: PageIteratorCallback = (data) => {
           users.push(data);
           return true;
         };
         let pageIterator = new PageIterator(client, response, callback);
         await pageIterator.iterate();
         res.status(200).json(users);
-      } catch (error) {
+      } catch (error: any) {
         res.status(500).send({
           errorMessage: error.message,
         });
@@ -51,9 +59,9 @@ export default async (_, res) => {
       break;
     case "POST":
       try {
-        const response = await client.api("/users").post(_.body);
+        const response = await client.api("/users").post(req.body);
         res.status(200).send(response);
-      } catch (error) {
+      } catch (error: any) {
         res.status(500).send({
           errorMessage: error.message,
         });
