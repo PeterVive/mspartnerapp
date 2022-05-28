@@ -20,11 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   let clientOptions: ClientOptions = {
     defaultVersion: "beta",
-    authProvider: new MyAuthenticationProvider(
-      req.query.tenantid,
-      ["https://graph.microsoft.com/.default"],
-      false
-    ),
+    authProvider: new MyAuthenticationProvider(req.query.tenantid as string),
   };
   const client = Client.initWithMiddleware(clientOptions);
 

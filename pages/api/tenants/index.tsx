@@ -20,9 +20,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   let clientOptions = {
     defaultVersion: "beta",
     authProvider: new MyAuthenticationProvider(
-      process.env.PARTNER_TENANT_ID,
-      ["https://graph.microsoft.com/.default"],
-      false
+      process.env.PARTNER_TENANT_ID as string
     ),
   };
 

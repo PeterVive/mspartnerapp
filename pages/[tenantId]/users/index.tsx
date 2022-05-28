@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
 import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { Products } from "../../../utils/SKUList";
@@ -9,18 +8,25 @@ import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
 import { Check, Close, Edit } from "@mui/icons-material/";
 import { useRouter } from "next/router";
-import _ from "lodash";
+import { uniq, map } from "lodash";
+import { useAppDispatch, useAppSelector } from "../../../features/hooks";
+import type {
+  AssignedLicense,
+  User,
+} from "@microsoft/microsoft-graph-types-beta";
+
+type ExtendedUser = Partial<User> & { displayableLicenses: string[] | string };
 
 export default function Users() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { tenantId } = router.query;
 
   const { data: session, status } = useSession({
     required: true,
   });
 
-  const tenant = useSelector((state) => state.tenant.value);
+  const tenant = useAppSelector((state) => state.tenant.value);
 
   // Load tenantData if Tenant is not set in store, but is in query parameter.
   const { data: tenantData, error: tenantError } = useSWR(
@@ -44,57 +50,67 @@ export default function Users() {
     }
   });
 
-  const { data: users, error } = useSWR(
+  const { data: users, error } = useSWR<ExtendedUser[]>(
     tenant
       ? `/api/tenants/${tenant.customerId}/users?select=id,userPrincipalName,displayName,assignedLicenses,userType,accountEnabled,onPremisesSyncEnabled`
       : null
   );
 
-  const licenseCache = [];
+  interface cachedLicense {
+    GUID: string;
+    Product_Display_Name: string;
+  }
+  const licenseCache: cachedLicense[] = [];
 
   if (users) {
     // Fix various properties for proper table usage.
-    users.forEach((user) => {
+    users.forEach((user: ExtendedUser) => {
       // Set undefined or null to false, for table lookup.
       if (!user.onPremisesSyncEnabled) {
         user.onPremisesSyncEnabled = false;
       }
       // Combine licensing array to a string.
-      const allLicenses = [];
-      user.assignedLicenses.forEach((assignedLicense) => {
-        if (assignedLicense.skuId) {
-          let product;
-          product = licenseCache.find(
-            (product) => product.GUID === assignedLicense.skuId
-          );
-          if (!product) {
-            product = Products.find(
+      const allLicenses: string[] = [];
+      if (user.assignedLicenses) {
+        user.assignedLicenses.forEach((assignedLicense: AssignedLicense) => {
+          if (assignedLicense.skuId) {
+            let product: cachedLicense | undefined;
+            product = licenseCache.find(
               (product) => product.GUID === assignedLicense.skuId
             );
-            licenseCache.push(product);
+            if (!product) {
+              product = Products.find(
+                (product) => product.GUID === assignedLicense.skuId
+              );
+              if (product) {
+                licenseCache.push(product);
+                allLicenses.push(product.Product_Display_Name);
+              }
+            }
           }
-          allLicenses.push(product.Product_Display_Name);
-        }
-      });
-      user.displayableLicenses = allLicenses;
-      user.licenseString = allLicenses.join(" + ");
+          user.displayableLicenses = allLicenses;
+        });
+      }
     });
   }
 
   // Create lookup object of user types
   const uniqueUserTypes = Object.fromEntries(
-    _.uniq(_.map(users, "userType")).map((e) => [e, e])
+    uniq(map(users, "userType")).map((e) => [e, e])
   );
 
   // Use license cache to create lookup object with license names
-  let uniqueLicenses = licenseCache.map(
+  let uniqueLicenses: any = licenseCache.map(
     (license) => license.Product_Display_Name
   );
 
   // Convert lookup object to correct format and add unlicensed option
-  uniqueLicenses = uniqueLicenses.reduce((accumulator, value) => {
-    return { ...accumulator, [value]: [value][0] };
-  }, {});
+  uniqueLicenses = uniqueLicenses.reduce(
+    (accumulator: object, value: string) => {
+      return { ...accumulator, [value]: [value][0] };
+    },
+    {}
+  );
   uniqueLicenses[""] = "Unlicensed";
 
   const columns = [
@@ -102,7 +118,8 @@ export default function Users() {
       title: "Account enabled",
       field: "accountEnabled",
       hidden: true,
-      render: (rowData) => (rowData.accountEnabled ? <Check /> : <Close />),
+      render: (rowData: User) =>
+        rowData.accountEnabled ? <Check /> : <Close />,
       lookup: {
         true: "Yes",
         false: "No",
@@ -126,7 +143,7 @@ export default function Users() {
       title: "Licenses",
       field: "displayableLicenses",
       lookup: uniqueLicenses,
-      customFilterAndSearch: (filter, rowData) => {
+      customFilterAndSearch: (filter: string | [], rowData: ExtendedUser) => {
         let filterTest = false;
         // If no filter is selected
         if (filter.length == 0) {
@@ -152,26 +169,32 @@ export default function Users() {
         }
         return filterTest;
       },
-      render: (rowData) => (
+      render: (rowData: ExtendedUser) => (
         <div>
-          {rowData.displayableLicenses.length > 0
+          {rowData.displayableLicenses?.length > 0 &&
+          Array.isArray(rowData.displayableLicenses)
             ? rowData.displayableLicenses.join(" + ")
             : "Unlicensed"}
         </div>
       ),
-      exportTransformer: (row) => {
-        // Find the user object of the current row.
-        var foundUser = users.find((user) => {
-          return user.userPrincipalName === row.userPrincipalName;
-        });
-        // Return the license string instead of displayableLicenses array
-        return (row.displayableLicenses = foundUser.licenseString);
+      exportTransformer: (row: ExtendedUser) => {
+        if (users) {
+          // Find the user object of the current row.
+          var foundUser = users.find((user: ExtendedUser) => {
+            return user.userPrincipalName === row.userPrincipalName;
+          });
+          if (Array.isArray(foundUser!.displayableLicenses)) {
+            // Return the license string instead of displayableLicenses array
+            return (row.displayableLicenses =
+              foundUser!.displayableLicenses.join(" + "));
+          }
+        }
       },
     },
     {
       title: "AD-Synced",
       field: "onPremisesSyncEnabled",
-      render: (rowData) =>
+      render: (rowData: ExtendedUser) =>
         rowData.onPremisesSyncEnabled ? <Check /> : <Close />,
       lookup: {
         true: "Yes",
@@ -179,13 +202,15 @@ export default function Users() {
       },
     },
   ];
-
   const actions = [
     {
       icon: () => <Edit />,
       tooltip: "Edit User",
-      onClick: (event, rowData) => {
-        router.push(`/${tenantId}/users/${rowData.id}/edit`);
+      onClick: (event: any, rowData: ExtendedUser | ExtendedUser[]) => {
+        // we dont allow bulk editing, yet.
+        if (!Array.isArray(rowData)) {
+          router.push(`/${tenantId}/users/${rowData.id}/edit`);
+        }
       },
     },
   ];
@@ -213,11 +238,12 @@ export default function Users() {
         </Head>
         <CommonTable
           title={"Users"}
-          data={users}
+          isLoading={!users}
+          data={users ? users : []}
           columns={columns}
           actions={actions}
           error={error}
-          exportFileName={tenant.displayName}
+          exportFileName={tenant.displayName!.toString()}
         />
       </>
     );

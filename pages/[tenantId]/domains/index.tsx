@@ -1,23 +1,23 @@
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
 import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
 import { useRouter } from "next/router";
+import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 
 export default function Users() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { tenantId } = router.query;
 
   const { data: session, status } = useSession({
     required: true,
   });
 
-  const tenant = useSelector((state) => state.tenant.value);
+  const tenant = useAppSelector((state) => state.tenant.value);
 
   // Load tenantData if Tenant is not set in store, but is in query parameter.
   const { data: tenantData, error: tenantError } = useSWR(
@@ -83,7 +83,7 @@ export default function Users() {
           data={data}
           columns={columns}
           error={error}
-          exportFileName={tenant.displayName}
+          exportFileName={tenant.displayName!.toString()}
         />
       </>
     );

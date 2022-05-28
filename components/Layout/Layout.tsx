@@ -1,8 +1,9 @@
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { CssBaseline, Toolbar, Box } from "@mui/material";
+import { PropsWithChildren } from "react";
 
-export default function Layout({ children }) {
+export default function Layout({ children }: PropsWithChildren<{}>) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />

@@ -1,4 +1,3 @@
-import useSWR from "swr";
 import {
   TextField,
   InputAdornment,
@@ -11,41 +10,41 @@ import {
   Alert,
   FormControl,
   Tooltip,
+  SnackbarCloseReason,
 } from "@mui/material";
-import { useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { Save } from "@mui/icons-material/";
 import { useFormik } from "formik";
+import type {
+  User,
+  Domain,
+  Contract,
+} from "@microsoft/microsoft-graph-types-beta";
 
-export default function UserEdit({ user, domains, tenant, ...props }) {
+type UserEditProps = {
+  user: User;
+  domains: Domain[];
+  tenant: Contract;
+};
+
+export default function UserEdit({ user, domains, tenant }: UserEditProps) {
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
   const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const handleCloseError = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenErrorSnackbar(false);
-  };
-  const handleCloseSuccess = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSuccessSnackbar(false);
-  };
 
   const formik = useFormik({
     initialValues: {
-      startUserPrincipalName: user.userPrincipalName.split("@")[0],
-      endUserPrincipalName: user.userPrincipalName.split("@")[1],
-      firstName: user.firstName,
-      lastName: user.lastName,
+      startUserPrincipalName: user.userPrincipalName!.split("@")[0],
+      endUserPrincipalName: user.userPrincipalName!.split("@")[1],
+      givenName: user.givenName,
+      surname: user.surname,
       displayName: user.displayName,
     },
     onSubmit: async (values, { setErrors }) => {
       const body = {
         userPrincipalName: `${values.startUserPrincipalName}@${values.endUserPrincipalName}`,
-        firstName: values.firstName,
-        lastName: values.lastName,
+        firstName: values.givenName,
+        surname: values.surname,
         displayName: values.displayName,
       };
       //
@@ -63,14 +62,14 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
         } else {
           setOpenSuccessSnackbar(true);
         }
-      } catch (error) {
+      } catch (error: any) {
         setSubmitError(error.error);
         setOpenErrorSnackbar(true);
       }
     },
   });
 
-  const verifiedDomains = [];
+  const verifiedDomains: Domain[] = [];
   domains.forEach(function (domain) {
     if (domain.isVerified) {
       verifiedDomains.push(domain);
@@ -82,10 +81,20 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
       <Snackbar
         open={openSuccessSnackbar}
         autoHideDuration={6000}
-        onClose={handleCloseSuccess}
+        onClose={(
+          event: Event | SyntheticEvent<any, Event>,
+          reason: SnackbarCloseReason
+        ): void => {
+          if (reason === "clickaway") {
+            return;
+          }
+          setOpenSuccessSnackbar(false);
+        }}
       >
         <Alert
-          onClose={handleCloseSuccess}
+          onClose={(event: SyntheticEvent<Element, Event>): void => {
+            setOpenSuccessSnackbar(false);
+          }}
           severity="success"
           sx={{ width: "100%" }}
         >
@@ -95,10 +104,17 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
       <Snackbar
         open={openErrorSnackbar}
         autoHideDuration={6000}
-        onClose={handleCloseError}
+        onClose={(
+          event: Event | SyntheticEvent<any, Event>,
+          reason: SnackbarCloseReason
+        ): void => {
+          setOpenErrorSnackbar(false);
+        }}
       >
         <Alert
-          onClose={handleCloseError}
+          onClose={(event: SyntheticEvent<Element, Event>): void => {
+            setOpenErrorSnackbar(false);
+          }}
           severity="error"
           sx={{ width: "100%" }}
         >
@@ -117,10 +133,6 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
                   value={formik.values.startUserPrincipalName}
                   onChange={formik.handleChange}
                   disabled={user.onPremisesSyncEnabled ? true : false}
-                  error={
-                    formik.touched.startUserPrincipalName &&
-                    formik.errors.startUserPrincipalName
-                  }
                   sx={{
                     mb: 2,
                     mr: 0,
@@ -147,10 +159,6 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
                   value={formik.values.endUserPrincipalName}
                   onChange={formik.handleChange}
                   disabled={user.onPremisesSyncEnabled ? true : false}
-                  error={
-                    formik.touched.endUserPrincipalName &&
-                    formik.errors.endUserPrincipalName
-                  }
                   sx={{
                     mb: 2,
                     "& .MuiOutlinedInput-root": {
@@ -172,19 +180,17 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
             </FormGroup>
             <FormGroup row={true}>
               <TextField
-                id="firstName"
+                id="givenName"
                 label="First name"
-                value={formik.values.firstName}
+                value={formik.values.givenName}
                 onChange={formik.handleChange}
-                error={formik.touched.firstName && formik.errors.firstName}
                 sx={{ mr: 2 }}
               />
               <TextField
-                id="lastName"
+                id="surname"
                 label="Last name"
-                value={formik.values.lastName}
+                value={formik.values.surname}
                 onChange={formik.handleChange}
-                error={formik.touched.lastName && formik.errors.lastName}
                 sx={{ mb: 2 }}
               />
             </FormGroup>
@@ -195,7 +201,6 @@ export default function UserEdit({ user, domains, tenant, ...props }) {
                 required={true}
                 value={formik.values.displayName}
                 onChange={formik.handleChange}
-                error={formik.touched.displayName && formik.errors.displayName}
                 sx={{ mb: 2 }}
               />
             </FormGroup>

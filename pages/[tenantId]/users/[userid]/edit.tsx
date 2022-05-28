@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Paper, Grid, Typography } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
 import { setTenant } from "../../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
@@ -9,17 +8,19 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import _ from "lodash";
 import UserEdit from "../../../../components/UserEdit";
+import { useAppDispatch, useAppSelector } from "../../../../features/hooks";
+import { Domain, User } from "@microsoft/microsoft-graph-types-beta";
 
 export default function Users() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { tenantId, userid } = router.query;
 
   const { data: session, status } = useSession({
     required: true,
   });
 
-  const tenant = useSelector((state) => state.tenant.value);
+  const tenant = useAppSelector((state) => state.tenant.value);
 
   // Load tenantData if Tenant is not set in store, but is in query parameter.
   const { data: tenantData, error: tenantError } = useSWR(
@@ -43,11 +44,11 @@ export default function Users() {
     }
   });
 
-  const { data: user, error: userError } = useSWR(
+  const { data: user, error: userError } = useSWR<User>(
     tenant ? `/api/tenants/${tenant.customerId}/users/${userid}` : null
   );
 
-  const { data: domains, error: domainError } = useSWR(
+  const { data: domains, error: domainError } = useSWR<Domain[]>(
     tenant ? `/api/tenants/${tenant.customerId}/domains` : null
   );
 
@@ -55,8 +56,8 @@ export default function Users() {
     return <div>loading..</div>;
   }
 
-  const verifiedDomains = [];
-  domains.forEach(function (domain) {
+  const verifiedDomains: Domain[] = [];
+  domains.forEach(function (domain: Domain) {
     if (domain.isVerified) {
       verifiedDomains.push(domain);
     }

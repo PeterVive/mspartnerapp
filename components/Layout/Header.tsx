@@ -1,13 +1,5 @@
-import * as React from "react";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Avatar,
-  Typography,
-  Button,
-} from "@mui/material";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -21,9 +13,7 @@ export default function Header() {
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           MSPartnerApp
         </Typography>
-        {session
-          ? `Signed in as ${session.user.email}`
-          : "Redirecting to authentication."}
+        {session ? `Signed in as ${session!.user!.email}` : "Redirecting.."}
         <Button color="inherit" onClick={() => signOut()}>
           Sign out
         </Button>

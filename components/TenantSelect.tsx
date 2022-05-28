@@ -2,17 +2,18 @@ import { TextField, Autocomplete, Skeleton } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 import fetcher from "../utils/fetcher";
-import { useSelector, useDispatch } from "react-redux";
 import { setTenant } from "../features/tenantSlice";
+import { Contract } from "@microsoft/microsoft-graph-types-beta";
+import { useAppDispatch, useAppSelector } from "../features/hooks";
 
 export default function TenantSelect() {
-  const tenant = useSelector((state) => state.tenant.value);
-  const dispatch = useDispatch();
+  const tenant = useAppSelector((state) => state.tenant.value);
+  const dispatch = useAppDispatch();
 
   const [value, setValue] = useState(tenant);
   const [inputValue, setInputValue] = useState("");
 
-  const { data, error } = useSWR("/api/tenants", fetcher);
+  const { data, error } = useSWR<Contract[]>("/api/tenants", fetcher);
 
   if (error) {
     return <div>Error loading tenants..</div>;
@@ -43,7 +44,7 @@ export default function TenantSelect() {
       id="tenant-search"
       autoHighlight
       options={data}
-      getOptionLabel={(option) => option.displayName}
+      getOptionLabel={(option) => option.displayName!.toString()}
       renderOption={(props, option) => {
         return (
           <li {...props} key={option.customerId}>

@@ -1,23 +1,26 @@
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
 import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
 import { useRouter } from "next/router";
+import { useAppDispatch, useAppSelector } from "../../../features/hooks";
+import { Group } from "@microsoft/microsoft-graph-types-beta";
 
-export default function Users() {
+type ExtendedGroup = Partial<Group> & { foundGroupType: string };
+
+export default function Groups() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { tenantId } = router.query;
 
   const { data: session, status } = useSession({
     required: true,
   });
 
-  const tenant = useSelector((state) => state.tenant.value);
+  const tenant = useAppSelector((state) => state.tenant.value);
 
   // Load tenantData if Tenant is not set in store, but is in query parameter.
   const { data: tenantData, error: tenantError } = useSWR(
@@ -41,7 +44,7 @@ export default function Users() {
     }
   });
 
-  const { data: groups, error } = useSWR(
+  const { data: groups, error } = useSWR<ExtendedGroup[]>(
     tenant
       ? `/api/tenants/${tenant.customerId}/groups?select=id,displayName,mail,groupTypes`
       : null
@@ -50,14 +53,22 @@ export default function Users() {
   if (groups) {
     // Detect group type
     groups.forEach((group) => {
-      if (group.groupTypes.includes("Unified")) {
-        group.foundGroupType = "Microsoft 365";
-      } else if (group.mailEnabled == false && group.securityEnabled == true) {
-        group.foundGroupType = "Security";
-      } else if (group.mailEnabled == true && group.securityEnabled == true) {
-        group.foundGroupType = "Mail-enabled security";
-      } else if (group.mailEnabled == true && group.securityEnabled == false) {
-        group.foundGroupType = "Distribution";
+      if (group.groupTypes) {
+        if (group.groupTypes.includes("Unified")) {
+          group.foundGroupType = "Microsoft 365";
+        } else if (
+          group.mailEnabled == false &&
+          group.securityEnabled == true
+        ) {
+          group.foundGroupType = "Security";
+        } else if (group.mailEnabled == true && group.securityEnabled == true) {
+          group.foundGroupType = "Mail-enabled security";
+        } else if (
+          group.mailEnabled == true &&
+          group.securityEnabled == false
+        ) {
+          group.foundGroupType = "Distribution";
+        }
       }
     });
   }
@@ -100,10 +111,11 @@ export default function Users() {
         </Head>
         <CommonTable
           title={"Groups"}
-          data={groups}
+          isLoading={!groups}
+          data={groups ? groups : []}
           columns={columns}
           error={error}
-          exportFileName={tenant.displayName}
+          exportFileName={tenant.displayName!}
         />
       </>
     );

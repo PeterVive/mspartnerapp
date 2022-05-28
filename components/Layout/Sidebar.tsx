@@ -19,19 +19,19 @@ import {
 } from "@mui/icons-material";
 import TenantSelect from "../TenantSelect";
 import Link from "../Link";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { MouseEvent, useState } from "react";
+import { useAppSelector } from "../../features/hooks";
 
 const drawerWidth = 350;
 
 export default function Sidebar() {
-  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const handleListItemClick = (event, index) => {
+  function handleListItemClick(event: MouseEvent<{}>, index: number) {
     setSelectedIndex(index);
-  };
+  }
 
-  const tenant = useSelector((state) => state.tenant.value);
+  const tenant = useAppSelector((state) => state.tenant.value);
 
   return (
     <Drawer

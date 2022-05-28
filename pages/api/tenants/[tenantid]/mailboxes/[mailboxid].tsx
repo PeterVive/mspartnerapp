@@ -16,9 +16,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     defaultVersion: "beta",
     baseUrl: "https://outlook.office365.com/adminapi/",
     authProvider: new MyAuthenticationProvider(
-      req.query.tenantid,
-      ["https://outlook.office365.com/.default"],
+      req.query.tenantid as string,
       false,
+      ["https://outlook.office365.com/.default"],
       "a0c73c16-a7e3-4564-9a95-2bdf47383716"
     ),
   };
