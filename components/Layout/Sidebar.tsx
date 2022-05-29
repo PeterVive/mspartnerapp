@@ -20,13 +20,11 @@ import {
 } from "@mui/icons-material";
 import TenantSelect from "../TenantSelect";
 import Link from "../Link";
-import { MouseEvent, useState } from "react";
 import { useAppSelector } from "../../features/hooks";
 import { useRouter } from "next/router";
 const drawerWidth = 350;
 
 export default function Sidebar() {
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const router = useRouter();
 
   const tenant = useAppSelector((state) => state.tenant.value);
