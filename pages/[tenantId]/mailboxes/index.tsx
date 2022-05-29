@@ -68,7 +68,7 @@ export default function Users() {
             key="title"
           />
         </Head>
-        <MailboxesTable mailboxes={mailboxes} tenant={tenant} error={error} />
+        <MailboxesTable mailboxes={mailboxes} tenant={tenant} />
       </>
     );
   }

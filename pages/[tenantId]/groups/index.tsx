@@ -114,7 +114,6 @@ export default function Groups() {
           isLoading={!groups}
           data={groups ? groups : []}
           columns={columns}
-          error={error}
           exportFileName={tenant.displayName!}
         />
       </>
