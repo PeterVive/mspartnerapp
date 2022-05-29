@@ -1,6 +1,7 @@
-import type { User } from "@microsoft/microsoft-graph-types-beta";
+import type { User, Group } from "@microsoft/microsoft-graph-types-beta";
 
 export type ExtendedUser = Partial<User> & { licenseNames: string[] | string };
+export type ExtendedGroup = Partial<Group> & { foundGroupType: string };
 
 export interface Mailbox {
   "@odata.id": string;

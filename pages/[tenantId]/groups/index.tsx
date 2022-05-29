@@ -4,10 +4,10 @@ import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import CommonTable from "../../../components/Table/CommonTable";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { Group } from "@microsoft/microsoft-graph-types-beta";
+import GroupsTable from "../../../components/Table/GroupsTable";
 
 type ExtendedGroup = Partial<Group> & { foundGroupType: string };
 
@@ -15,8 +15,7 @@ export default function Groups() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tenantId } = router.query;
-
-  const { data: session, status } = useSession({
+  useSession({
     required: true,
   });
 
@@ -50,44 +49,6 @@ export default function Groups() {
       : null
   );
 
-  if (groups) {
-    // Detect group type
-    groups.forEach((group) => {
-      if (group.groupTypes) {
-        if (group.groupTypes.includes("Unified")) {
-          group.foundGroupType = "Microsoft 365";
-        } else if (
-          group.mailEnabled == false &&
-          group.securityEnabled == true
-        ) {
-          group.foundGroupType = "Security";
-        } else if (group.mailEnabled == true && group.securityEnabled == true) {
-          group.foundGroupType = "Mail-enabled security";
-        } else if (
-          group.mailEnabled == true &&
-          group.securityEnabled == false
-        ) {
-          group.foundGroupType = "Distribution";
-        }
-      }
-    });
-  }
-
-  const columns = [
-    { title: "Display name", field: "displayName" },
-    { title: "Mail", field: "mail" },
-    {
-      title: "Type",
-      field: "foundGroupType",
-      lookup: {
-        "Microsoft 365": "Microsoft 365",
-        Security: "Security",
-        "Mail-enabled security": "Mail-enabled security",
-        Distribution: "Distribution",
-      },
-    },
-  ];
-
   let content;
 
   if (!tenant) {
@@ -109,13 +70,7 @@ export default function Groups() {
             key="title"
           />
         </Head>
-        <CommonTable
-          title={"Groups"}
-          isLoading={!groups}
-          data={groups ? groups : []}
-          columns={columns}
-          exportFileName={tenant.displayName!}
-        />
+        <GroupsTable groups={groups} tenant={tenant} />
       </>
     );
   }

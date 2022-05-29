@@ -2,7 +2,6 @@ import type {
   Contract,
   ManagedDevice,
 } from "@microsoft/microsoft-graph-types-beta";
-import { Check, Close } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import CommonTable from "./CommonTable";
 

@@ -68,7 +68,7 @@ export default function Users() {
             key="title"
           />
         </Head>
-        <UsersTable users={users} tenant={tenant} error={error} />
+        <UsersTable users={users} tenant={tenant} />
       </>
     );
   }
