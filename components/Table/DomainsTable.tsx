@@ -6,14 +6,9 @@ import CommonTable from "./CommonTable";
 type DomainsTableProps = {
   domains: Domain[] | undefined;
   tenant: Contract;
-  error?: any;
 };
 
-export default function DomainsTable({
-  domains,
-  tenant,
-  error,
-}: DomainsTableProps) {
+export default function DomainsTable({ domains, tenant }: DomainsTableProps) {
   const [rows, setRows] = useState<Domain[] | undefined>(domains);
   const [columns, setColumns] = useState<any>([
     { title: "Domain name", field: "id" },

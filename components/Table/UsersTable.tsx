@@ -9,10 +9,9 @@ import CommonTable from "./CommonTable";
 type UsersTableProps = {
   users: ExtendedUser[] | undefined;
   tenant: Contract;
-  error?: any;
 };
 
-export default function UsersTable({ users, tenant, error }: UsersTableProps) {
+export default function UsersTable({ users, tenant }: UsersTableProps) {
   const actions = [
     {
       icon: () => <Edit />,

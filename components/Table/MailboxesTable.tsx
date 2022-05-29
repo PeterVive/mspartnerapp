@@ -6,13 +6,11 @@ import CommonTable from "./CommonTable";
 type MailboxesTableProps = {
   mailboxes: Mailbox[] | undefined;
   tenant: Contract;
-  error?: any;
 };
 
 export default function MailboxesTable({
   mailboxes,
   tenant,
-  error,
 }: MailboxesTableProps) {
   const [rows, setRows] = useState<Mailbox[] | undefined>();
   const [columns, setColumns] = useState<any>([
