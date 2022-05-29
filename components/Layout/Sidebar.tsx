@@ -22,15 +22,12 @@ import TenantSelect from "../TenantSelect";
 import Link from "../Link";
 import { MouseEvent, useState } from "react";
 import { useAppSelector } from "../../features/hooks";
-
+import { useRouter } from "next/router";
 const drawerWidth = 350;
 
 export default function Sidebar() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  function handleListItemClick(event: MouseEvent<{}>, index: number) {
-    setSelectedIndex(index);
-  }
+  const router = useRouter();
 
   const tenant = useAppSelector((state) => state.tenant.value);
 
@@ -58,15 +55,17 @@ export default function Sidebar() {
           }
         >
           <Link
-            href={tenant ? `/${tenant.customerId}/users` : "#"}
+            href={{
+              pathname: "/[tenantId]/users",
+              query: { tenantId: tenant?.customerId },
+            }}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
             <ListItem disablePadding>
               <ListItemButton
                 disabled={tenant ? false : true}
-                selected={selectedIndex === 0}
-                onClick={(event) => handleListItemClick(event, 0)}
+                selected={router.pathname.endsWith("/users")}
               >
                 <ListItemIcon>
                   <Person />
@@ -76,15 +75,17 @@ export default function Sidebar() {
             </ListItem>
           </Link>
           <Link
-            href={tenant ? `/${tenant.customerId}/groups` : "#"}
+            href={{
+              pathname: "/[tenantId]/groups",
+              query: { tenantId: tenant?.customerId },
+            }}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
             <ListItem disablePadding>
               <ListItemButton
                 disabled={tenant ? false : true}
-                selected={selectedIndex === 1}
-                onClick={(event) => handleListItemClick(event, 1)}
+                selected={router.pathname.endsWith("/groups")}
               >
                 <ListItemIcon>
                   <Group />
@@ -94,15 +95,17 @@ export default function Sidebar() {
             </ListItem>
           </Link>
           <Link
-            href={tenant ? `/${tenant.customerId}/domains` : "#"}
+            href={{
+              pathname: "/[tenantId]/domains",
+              query: { tenantId: tenant?.customerId },
+            }}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
             <ListItem disablePadding>
               <ListItemButton
                 disabled={tenant ? false : true}
-                selected={selectedIndex === 2}
-                onClick={(event) => handleListItemClick(event, 2)}
+                selected={router.pathname.endsWith("/domains")}
               >
                 <ListItemIcon>
                   <Language />
@@ -125,15 +128,17 @@ export default function Sidebar() {
           }
         >
           <Link
-            href={tenant ? `/${tenant.customerId}/devices` : "#"}
+            href={{
+              pathname: "/[tenantId]/devices",
+              query: { tenantId: tenant?.customerId },
+            }}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
             <ListItem disablePadding>
               <ListItemButton
                 disabled={tenant ? false : true}
-                selected={selectedIndex === 3}
-                onClick={(event) => handleListItemClick(event, 3)}
+                selected={router.pathname.endsWith("/devices")}
               >
                 <ListItemIcon>
                   <Devices />
@@ -153,15 +158,17 @@ export default function Sidebar() {
           }
         >
           <Link
-            href={tenant ? `/${tenant.customerId}/mailboxes` : "#"}
+            href={{
+              pathname: "/[tenantId]/mailboxes",
+              query: { tenantId: tenant?.customerId },
+            }}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
             <ListItem disablePadding>
               <ListItemButton
                 disabled={tenant ? false : true}
-                selected={selectedIndex === 4}
-                onClick={(event) => handleListItemClick(event, 4)}
+                selected={router.pathname.endsWith("/mailboxes")}
               >
                 <ListItemIcon>
                   <Mail />
@@ -171,19 +178,19 @@ export default function Sidebar() {
             </ListItem>
           </Link>
           <Link
-            href={
-              tenant
-                ? `/${tenant.customerId}/mailboxes/organizationconfig`
-                : "#"
-            }
+            href={{
+              pathname: "/[tenantId]/mailboxes/organizationconfig",
+              query: { tenantId: tenant?.customerId },
+            }}
             style={{ textDecoration: "none" }}
             color="inherit"
           >
             <ListItem disablePadding>
               <ListItemButton
                 disabled={tenant ? false : true}
-                selected={selectedIndex === 5}
-                onClick={(event) => handleListItemClick(event, 5)}
+                selected={router.pathname.endsWith(
+                  "/mailboxes/organizationconfig"
+                )}
               >
                 <ListItemIcon>
                   <Engineering />

@@ -28,28 +28,19 @@ export default function GroupTable({ groups, tenant }: GroupsTableProps) {
   useEffect(() => {
     if (groups) {
       groups.forEach((group) => {
-        if (group.groupTypes) {
-          if (group.groupTypes.includes("Unified")) {
+        if (!group.foundGroupType) {
+          if (group.groupTypes?.includes("Unified")) {
             group.foundGroupType = "Microsoft 365";
-          } else if (
-            group.mailEnabled == false &&
-            group.securityEnabled == true
-          ) {
+          } else if (!group.mailEnabled && group.securityEnabled) {
             group.foundGroupType = "Security";
-          } else if (
-            group.mailEnabled == true &&
-            group.securityEnabled == true
-          ) {
+          } else if (group.mailEnabled && group.securityEnabled) {
             group.foundGroupType = "Mail-enabled security";
-          } else if (
-            group.mailEnabled == true &&
-            group.securityEnabled == false
-          ) {
+          } else if (group.mailEnabled && !group.securityEnabled) {
             group.foundGroupType = "Distribution";
           }
         }
+        setRows(groups);
       });
-      setRows(groups);
     }
   }, [groups]);
 

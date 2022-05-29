@@ -123,13 +123,17 @@ export default function UsersTable({ users, tenant }: UsersTableProps) {
           user.onPremisesSyncEnabled = false;
         }
       });
+      if (!columns[4].lookup) {
+        const newColumns = [...columns];
+        newColumns[4].lookup = getLicenseLookupObject(users);
+        setColumns(newColumns);
+      }
       // Set users licenseNames and get lookup object.
-      const newColumns = [...columns];
-      newColumns[4].lookup = getLicenseLookupObject(users);
-      setColumns(newColumns);
-      setRows(users);
+      if (!rows) {
+        setRows(users);
+      }
     }
-  }, [users, columns]);
+  }, [users, columns, rows]);
 
   return (
     <CommonTable

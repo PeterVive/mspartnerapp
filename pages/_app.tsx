@@ -13,6 +13,7 @@ import { SessionProvider } from "next-auth/react";
 import { SWRConfig } from "swr";
 import { fetcher } from "../utils/fetcher";
 import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -26,29 +27,17 @@ export default function MyApp({
   pageProps: { session, ...pageProps },
   emotionCache = clientSideEmotionCache,
 }: CustomAppProps) {
-  const [tenant, setTenant] = useState();
+  const router = useRouter();
 
   return (
     <Provider store={store}>
-      <CacheProvider value={emotionCache}>
-        <SessionProvider session={session}>
-          <SWRConfig
-            value={{
-              fetcher: fetcher,
-              onError: (error, key) => {
-                //console.log(error);
-              },
-              onErrorRetry: (
-                error,
-                key,
-                config,
-                revalidate,
-                { retryCount }
-              ) => {
-                if (error.status == 404) return;
-              },
-            }}
-          >
+      <SessionProvider session={session}>
+        <SWRConfig
+          value={{
+            fetcher: fetcher,
+          }}
+        >
+          <CacheProvider value={emotionCache}>
             <Head>
               <meta
                 name="viewport"
@@ -58,12 +47,12 @@ export default function MyApp({
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <Layout>
-                <Component {...pageProps} />
+                <Component {...pageProps} key={router.asPath} />
               </Layout>
             </ThemeProvider>
-          </SWRConfig>
-        </SessionProvider>
-      </CacheProvider>
+          </CacheProvider>
+        </SWRConfig>
+      </SessionProvider>
     </Provider>
   );
 }

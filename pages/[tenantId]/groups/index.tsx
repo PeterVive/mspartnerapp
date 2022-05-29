@@ -45,7 +45,7 @@ export default function Groups() {
 
   const { data: groups, error } = useSWR<ExtendedGroup[]>(
     tenant
-      ? `/api/tenants/${tenant.customerId}/groups?select=id,displayName,mail,groupTypes`
+      ? `/api/tenants/${tenant.customerId}/groups?select=id,displayName,mail,groupTypes,mailEnabled,securityEnabled`
       : null
   );
 
