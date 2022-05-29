@@ -4,7 +4,7 @@ import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import CommonTable from "../../../components/CommonTable";
+import CommonTable from "../../../components/Table/CommonTable";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { Group } from "@microsoft/microsoft-graph-types-beta";

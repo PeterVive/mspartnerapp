@@ -4,18 +4,17 @@ import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import CommonTable from "../../../components/CommonTable";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { Contract } from "@microsoft/microsoft-graph-types-beta";
-import { Domain } from "domain";
+import { Contract, Domain } from "@microsoft/microsoft-graph-types-beta";
+import DomainsTable from "../../../components/Table/DomainsTable";
 
 export default function Users() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tenantId } = router.query;
 
-  const { data: session, status } = useSession({
+  useSession({
     required: true,
   });
 
@@ -47,18 +46,6 @@ export default function Users() {
     tenant ? `/api/tenants/${tenant.customerId}/domains` : null
   );
 
-  const columns = [
-    { title: "Domain name", field: "id" },
-    {
-      title: "Verified",
-      field: "isVerified",
-      lookup: {
-        true: "Yes",
-        false: "No",
-      },
-    },
-  ];
-
   let content;
 
   if (!tenant) {
@@ -80,14 +67,7 @@ export default function Users() {
             key="title"
           />
         </Head>
-        <CommonTable
-          title={"Domains"}
-          data={domains ? domains : []}
-          columns={columns}
-          isLoading={!domains}
-          error={error}
-          exportFileName={tenant.displayName!.toString()}
-        />
+        <DomainsTable domains={domains} tenant={tenant} error={error} />
       </>
     );
   }

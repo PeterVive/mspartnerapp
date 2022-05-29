@@ -7,9 +7,6 @@ module.exports = {
       "@mui/material": {
         transform: "@mui/material/{{member}}",
       },
-      lodash: {
-        transform: "lodash/{{member}}",
-      },
     },
   },
 

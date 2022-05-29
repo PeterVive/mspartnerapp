@@ -9,7 +9,8 @@ import {
   PageIteratorCallback,
 } from "@microsoft/microsoft-graph-client";
 import { getSession } from "next-auth/react";
-import { User } from "@microsoft/microsoft-graph-types-beta";
+import { ExtendedUser } from "../../../../../utils/customGraphTypes";
+import { licenseLookup } from "../../../../../utils/licenseLookup";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession({ req });
@@ -34,7 +35,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         req.query.select = "";
       }
       try {
-        const users: User[] = [];
+        const users: ExtendedUser[] = [];
         const response: PageCollection = await client
           .api("/users")
           .filter(req.query.filter ? req.query.filter[0] : "")
@@ -46,6 +47,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         };
         let pageIterator = new PageIterator(client, response, callback);
         await pageIterator.iterate();
+        users.forEach((user) => {
+          user.licenseNames = licenseLookup(user);
+        });
         res.status(200).json(users);
       } catch (error: any) {
         res.status(500).send({

@@ -1,37 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import CommonTable from "../../../components/CommonTable";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { Contract, Device } from "@microsoft/microsoft-graph-types-beta";
+import DevicesTable from "../../../components/Table/DevicesTable";
 
 export default function Devices() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tenantId } = router.query;
 
-  const { data: session, status } = useSession({
+  useSession({
     required: true,
   });
-
-  const [columns, setColumns] = useState([
-    { title: "Display name", field: "displayName" },
-    { title: "Manufacturer", field: "manufacturer" },
-    { title: "Model", field: "model" },
-    {
-      title: "Enrollment type",
-      field: "enrollmentType",
-      lookup: {
-        OnPremiseCoManaged: "Azure AD Hybrid-joined",
-        AzureDomainJoined: "Azure AD Joined",
-        null: "Registrered",
-      },
-    },
-  ]);
 
   const tenant = useAppSelector((state) => state.tenant.value);
 
@@ -82,14 +67,7 @@ export default function Devices() {
             key="title"
           />
         </Head>
-        <CommonTable
-          title={"Devices"}
-          data={devices ? devices : []}
-          columns={columns}
-          isLoading={!devices}
-          error={error}
-          exportFileName={tenant.displayName!.toString()}
-        />
+        <DevicesTable devices={devices} tenant={tenant} error={error} />
       </>
     );
   }

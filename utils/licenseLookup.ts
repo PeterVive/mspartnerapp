@@ -17,31 +17,30 @@ export function licenseLookup(user: User) {
   return userLicenses;
 }
 
-type UserLicensingObject = {
-  users: ExtendedUser[];
-  licenseLookupObject: object;
+type licenseLookupObject = {
+  [key: string]: string | string[];
 };
 
 // Returns a material table lookup object for an array of users, and the users array with licenseNames added to each user.
-export function getUserLicensingObjects(
+export function getLicenseLookupObject(
   users: ExtendedUser[]
-): UserLicensingObject {
+): licenseLookupObject {
   // Create a cache array to hold the unique licenses.
   const licenseNames: string[] = [];
   // Loop through the users.
   users.forEach((user) => {
     // Look up each users license and add it's name to the cache array if not there.
-    // Add as new property on ExtendedUser.
-    user.licenseNames = licenseLookup(user);
-    user.licenseNames.forEach((license) => {
-      if (!licenseNames.includes(license)) {
-        licenseNames.push(license);
-      }
-    });
+    if (Array.isArray(user.licenseNames)) {
+      user.licenseNames.forEach((license) => {
+        if (!licenseNames.includes(license)) {
+          licenseNames.push(license);
+        }
+      });
+    }
   });
 
   // Create a lookup object to hold the unique licenses for displaying in material table.
-  let licenseLookupObject = {};
+  let licenseLookupObject: licenseLookupObject = {};
   // Loop through the cache array, adding each license to the lookup object in the format "licenseName": "licenseName".
   licenseNames.forEach((license) => {
     licenseLookupObject = {
@@ -49,8 +48,6 @@ export function getUserLicensingObjects(
       [license]: [license],
     };
   });
-  return {
-    users: users,
-    licenseLookupObject: licenseLookupObject,
-  };
+  licenseLookupObject[""] = "Unlicensed";
+  return licenseLookupObject;
 }

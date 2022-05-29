@@ -4,19 +4,18 @@ import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import CommonTable from "../../../components/CommonTable";
 import { useRouter } from "next/router";
-import _ from "lodash";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { Mailbox } from "../../../utils/customGraphTypes";
 import { Contract } from "@microsoft/microsoft-graph-types-beta";
+import MailboxesTable from "../../../components/Table/MailboxesTable";
 
 export default function Users() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tenantId } = router.query;
 
-  const { data: session, status } = useSession({
+  useSession({
     required: true,
   });
 
@@ -48,40 +47,6 @@ export default function Users() {
     tenant ? `/api/tenants/${tenant.customerId}/mailboxes` : null
   );
 
-  if (mailboxes) {
-    // Remove DiscoverySearchMailbox
-    mailboxes = mailboxes.filter(
-      (mailbox: Mailbox) =>
-        !mailbox.UserPrincipalName.startsWith("DiscoverySearchMailbox")
-    );
-
-    // Convert alias data to more table-friendly format
-    mailboxes.forEach((mailbox) => {
-      const aliasList: string[] = [];
-      mailbox.EmailAddresses.forEach((alias) => {
-        if (alias.startsWith("smtp:")) {
-          aliasList.push(alias.slice(5));
-        }
-      });
-      mailbox.Alias = aliasList.join(",\r\n");
-    });
-  }
-
-  const uniqueMailboxTypes = Object.fromEntries(
-    _.uniq(_.map(mailboxes, "RecipientTypeDetails")).map((e) => [e, e])
-  );
-
-  const columns = [
-    { title: "UPN", field: "UserPrincipalName" },
-    { title: "Display name", field: "DisplayName" },
-    { title: "Alias", field: "Alias" },
-    {
-      title: "Type",
-      field: "RecipientTypeDetails",
-      lookup: uniqueMailboxTypes,
-    },
-  ];
-
   let content;
 
   if (!tenant) {
@@ -103,14 +68,7 @@ export default function Users() {
             key="title"
           />
         </Head>
-        <CommonTable
-          title={"Mailboxes"}
-          isLoading={!mailboxes}
-          data={mailboxes ? mailboxes : []}
-          columns={columns}
-          error={error}
-          exportFileName={tenant.displayName!}
-        />
+        <MailboxesTable mailboxes={mailboxes} tenant={tenant} error={error} />
       </>
     );
   }
