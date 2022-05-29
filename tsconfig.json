@@ -21,7 +21,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "components/CommonTable.js"
+    "components/CommonTable.js",
+    "utils/licenseLookup.ts"
   ],
   "exclude": ["node_modules"]
 }
