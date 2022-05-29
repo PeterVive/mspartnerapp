@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
 import { Contract, Device } from "@microsoft/microsoft-graph-types-beta";
 
-export default function Users() {
+export default function Devices() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tenantId } = router.query;
@@ -17,6 +17,21 @@ export default function Users() {
   const { data: session, status } = useSession({
     required: true,
   });
+
+  const [columns, setColumns] = useState([
+    { title: "Display name", field: "displayName" },
+    { title: "Manufacturer", field: "manufacturer" },
+    { title: "Model", field: "model" },
+    {
+      title: "Enrollment type",
+      field: "enrollmentType",
+      lookup: {
+        OnPremiseCoManaged: "Azure AD Hybrid-joined",
+        AzureDomainJoined: "Azure AD Joined",
+        null: "Registrered",
+      },
+    },
+  ]);
 
   const tenant = useAppSelector((state) => state.tenant.value);
 
@@ -45,21 +60,6 @@ export default function Users() {
   const { data: devices, error } = useSWR<Device[]>(
     tenant ? `/api/tenants/${tenant.customerId}/devices` : null
   );
-
-  const columns = [
-    { title: "Display name", field: "displayName" },
-    { title: "Manufacturer", field: "manufacturer" },
-    { title: "Model", field: "model" },
-    {
-      title: "Enrollment type",
-      field: "enrollmentType",
-      lookup: {
-        OnPremiseCoManaged: "Azure AD Hybrid-joined",
-        AzureDomainJoined: "Azure AD Joined",
-        null: "Registrered",
-      },
-    },
-  ];
 
   let content;
 

@@ -1,3 +1,7 @@
+import type { User } from "@microsoft/microsoft-graph-types-beta";
+
+export type ExtendedUser = Partial<User> & { licenseNames: string[] | string };
+
 export interface Mailbox {
   "@odata.id": string;
   "@odata.editLink": string;

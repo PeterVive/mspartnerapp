@@ -2,28 +2,20 @@ import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
-import Products from "../../../utils/SKUList.json";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import CommonTable from "../../../components/CommonTable";
 import { Check, Close, Edit } from "@mui/icons-material/";
 import { useRouter } from "next/router";
-import { uniq, map } from "lodash";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import type {
-  AssignedLicense,
-  User,
-} from "@microsoft/microsoft-graph-types-beta";
-import { string } from "yup";
-
-type ExtendedUser = Partial<User> & { displayableLicenses: string[] | string };
-
+import { getUserLicensingObjects } from "../../../utils/licenseLookup";
+import type { ExtendedUser } from "../../../utils/customGraphTypes";
 export default function Users() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tenantId } = router.query;
 
-  const { data: session, status } = useSession({
+  useSession({
     required: true,
   });
 
@@ -51,18 +43,13 @@ export default function Users() {
     }
   });
 
-  const { data: users, error } = useSWR<ExtendedUser[]>(
+  let { data: users, error } = useSWR<ExtendedUser[]>(
     tenant
       ? `/api/tenants/${tenant.customerId}/users?select=id,userPrincipalName,displayName,assignedLicenses,userType,accountEnabled,onPremisesSyncEnabled`
       : null
   );
 
-  type cachedLicense = {
-    GUID: string;
-    Product_Display_Name: string;
-  };
-  const licenseCache: cachedLicense[] = [];
-
+  let uniqueLicenses;
   if (users) {
     // Fix various properties for proper table usage.
     users.forEach((user) => {
@@ -70,56 +57,20 @@ export default function Users() {
       if (!user.onPremisesSyncEnabled) {
         user.onPremisesSyncEnabled = false;
       }
-      // Combine licensing array to a string.
-      const allLicenses: string[] = [];
-      if (user.assignedLicenses) {
-        user.assignedLicenses.forEach((assignedLicense) => {
-          if (assignedLicense.skuId) {
-            let product;
-            product = licenseCache.find(
-              (product: any) => product.GUID === assignedLicense.skuId
-            );
-            if (!product) {
-              product = Products.find(
-                (product) => product.GUID === assignedLicense.skuId
-              );
-            }
-            if (product) {
-              licenseCache.push(product);
-              allLicenses.push(product.Product_Display_Name);
-            }
-          }
-        });
-      }
-      user.displayableLicenses = allLicenses;
     });
+    // Set users licenseNames and get lookup object.
+    const { users: modifiedUsers, licenseLookupObject } =
+      getUserLicensingObjects(users);
+    users = modifiedUsers;
+    uniqueLicenses = licenseLookupObject;
   }
-
-  // Create lookup object of user types
-  const uniqueUserTypes = Object.fromEntries(
-    uniq(map(users, "userType")).map((e) => [e, e])
-  );
-
-  // Use license cache to create lookup object with license names
-  let uniqueLicenses: any = licenseCache.map(
-    (license: cachedLicense) => license.Product_Display_Name
-  );
-
-  // Convert lookup object to correct format and add unlicensed option
-  uniqueLicenses = uniqueLicenses.reduce(
-    (accumulator: object, value: string) => {
-      return { ...accumulator, [value]: [value][0] };
-    },
-    {}
-  );
-  uniqueLicenses[""] = "Unlicensed";
 
   const columns = [
     {
       title: "Account enabled",
       field: "accountEnabled",
       hidden: true,
-      render: (rowData: User) =>
+      render: (rowData: ExtendedUser) =>
         rowData.accountEnabled ? <Check /> : <Close />,
       lookup: {
         true: "Yes",
@@ -130,7 +81,10 @@ export default function Users() {
       title: "Type",
       field: "userType",
       hidden: true,
-      lookup: uniqueUserTypes,
+      lookup: {
+        Member: "Member",
+        Guest: "Guest",
+      },
     },
     {
       title: "UPN",
@@ -142,7 +96,7 @@ export default function Users() {
     },
     {
       title: "Licenses",
-      field: "displayableLicenses",
+      field: "licenseNames",
       lookup: uniqueLicenses,
       customFilterAndSearch: (filter: string | [], rowData: ExtendedUser) => {
         let filterTest = false;
@@ -156,14 +110,11 @@ export default function Users() {
         } else {
           filter.forEach((appliedFilter) => {
             // If unlicensed filter selected
-            if (
-              appliedFilter == "" &&
-              rowData.displayableLicenses.length == 0
-            ) {
+            if (appliedFilter == "" && rowData.licenseNames.length == 0) {
               filterTest = true;
             }
             // Actual license filtering
-            if (rowData.displayableLicenses.includes(appliedFilter)) {
+            if (rowData.licenseNames.includes(appliedFilter)) {
               filterTest = true;
             }
           });
@@ -172,9 +123,9 @@ export default function Users() {
       },
       render: (rowData: ExtendedUser) => (
         <div>
-          {Array.isArray(rowData.displayableLicenses) &&
-          rowData.displayableLicenses.length > 0
-            ? rowData.displayableLicenses.join(" + ")
+          {Array.isArray(rowData.licenseNames) &&
+          rowData.licenseNames.length > 0
+            ? rowData.licenseNames.join(" + ")
             : "Unlicensed"}
         </div>
       ),
@@ -184,10 +135,9 @@ export default function Users() {
           var foundUser = users.find((user: ExtendedUser) => {
             return user.userPrincipalName === row.userPrincipalName;
           });
-          if (Array.isArray(foundUser!.displayableLicenses)) {
-            // Return the license string instead of displayableLicenses array
-            return (row.displayableLicenses =
-              foundUser!.displayableLicenses.join(" + "));
+          if (Array.isArray(foundUser!.licenseNames)) {
+            // Return the license string instead of licenseNames array
+            return (row.licenseNames = foundUser!.licenseNames.join(" + "));
           }
         }
       },
