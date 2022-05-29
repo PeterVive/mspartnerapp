@@ -8,7 +8,7 @@ import {
   PageIterator,
   PageIteratorCallback,
 } from "@microsoft/microsoft-graph-client";
-import { Device } from "@microsoft/microsoft-graph-types-beta";
+import type { ManagedDevice } from "@microsoft/microsoft-graph-types-beta";
 import { getSession } from "next-auth/react";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -32,17 +32,23 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const client = Client.initWithMiddleware(clientOptions);
-  const devices: Device[] = [];
-  const response: PageCollection = await client
-    .api(`/devices`)
-    .select(req.query.select)
-    .filter(req.query.filter ? req.query.filter[0] : "")
-    .get();
-  let callback: PageIteratorCallback = (data) => {
-    devices.push(data);
-    return true;
-  };
-  let pageIterator = new PageIterator(client, response, callback);
-  await pageIterator.iterate();
-  res.status(200).json(devices);
+  try {
+    const devices: ManagedDevice[] = [];
+    const response: PageCollection = await client
+      .api(`/deviceManagement/managedDevices`)
+      .select(req.query.select)
+      .filter(req.query.filter ? req.query.filter[0] : "")
+      .get();
+    let callback: PageIteratorCallback = (data) => {
+      devices.push(data);
+      return true;
+    };
+    let pageIterator = new PageIterator(client, response, callback);
+    await pageIterator.iterate();
+    res.status(200).json(devices);
+  } catch (error: any) {
+    res.status(500).send({
+      errorMessage: error.message,
+    });
+  }
 };

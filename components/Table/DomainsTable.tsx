@@ -1,4 +1,5 @@
 import type { Contract, Domain } from "@microsoft/microsoft-graph-types-beta";
+import { Check, Close } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import CommonTable from "./CommonTable";
 
@@ -23,6 +24,7 @@ export default function DomainsTable({
         true: "Yes",
         false: "No",
       },
+      render: (rowData: Domain) => (rowData.isVerified ? <Check /> : <Close />),
     },
   ]);
 
@@ -37,7 +39,6 @@ export default function DomainsTable({
       title={"Domains"}
       isLoading={!domains}
       data={rows ? rows : []}
-      error={error}
       columns={columns}
       exportFileName={tenant.displayName!.toString()}
     />

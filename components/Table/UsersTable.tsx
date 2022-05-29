@@ -137,7 +137,6 @@ export default function UsersTable({ users, tenant, error }: UsersTableProps) {
       title={"Users"}
       isLoading={!users}
       data={rows ? rows : []}
-      error={error}
       columns={columns}
       actions={actions}
       exportFileName={tenant.displayName!.toString()}

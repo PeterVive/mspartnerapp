@@ -1,31 +1,34 @@
-import type { Contract, Device } from "@microsoft/microsoft-graph-types-beta";
+import type {
+  Contract,
+  ManagedDevice,
+} from "@microsoft/microsoft-graph-types-beta";
+import { Check, Close } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import CommonTable from "./CommonTable";
 
 type DevicesTableProps = {
-  devices: Device[] | undefined;
+  devices: ManagedDevice[] | undefined;
   tenant: Contract;
-  error?: any;
 };
 
-export default function DevicesTable({
-  devices,
-  tenant,
-  error,
-}: DevicesTableProps) {
-  const [rows, setRows] = useState<Device[] | undefined>(devices);
+export default function DevicesTable({ devices, tenant }: DevicesTableProps) {
+  const [rows, setRows] = useState<ManagedDevice[] | undefined>(devices);
   const [columns, setColumns] = useState<any>([
-    { title: "Display name", field: "displayName" },
-    { title: "Manufacturer", field: "manufacturer" },
-    { title: "Model", field: "model" },
+    { title: "Name", field: "deviceName" },
+    { title: "Associated user", field: "userId" },
     {
-      title: "Enrollment type",
-      field: "enrollmentType",
+      title: "Ownership",
+      field: "ownerType",
       lookup: {
-        OnPremiseCoManaged: "Azure AD Hybrid-joined",
-        AzureDomainJoined: "Azure AD Joined",
-        Registrered: "Registrered",
+        company: "Company",
+        personal: "Personal",
+        unknown: "Unknown",
       },
+    },
+    {
+      title: "Last sync",
+      field: "lastSyncDateTime",
+      type: "datetime",
     },
   ]);
 
@@ -33,8 +36,8 @@ export default function DevicesTable({
     if (devices) {
       devices.forEach((device) => {
         // If undefined, means the device is just Azure AD registrered.
-        if (!device.enrollmentType) {
-          device.enrollmentType = "Registrered";
+        if (!device.ownerType) {
+          device.ownerType = "unknown";
         }
       });
       setRows(devices);
@@ -46,7 +49,6 @@ export default function DevicesTable({
       title={"Devices"}
       isLoading={!devices}
       data={rows ? rows : []}
-      error={error}
       columns={columns}
       exportFileName={tenant.displayName!.toString()}
     />

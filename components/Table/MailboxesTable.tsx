@@ -59,7 +59,6 @@ export default function MailboxesTable({
       title={"Mailboxes"}
       isLoading={!mailboxes}
       data={rows ? rows : []}
-      error={error}
       columns={columns}
       exportFileName={tenant.displayName!.toString()}
     />

@@ -1,15 +1,11 @@
 import MaterialTable, {
-  Action,
   MaterialTableProps,
   Options,
 } from "@material-table/core";
 import { ExportCsv, ExportPdf } from "@material-table/exporters";
-import { TextField, InputAdornment, Box } from "@mui/material";
-import { FilterAlt } from "@mui/icons-material";
 
 export interface CommonTableProps<T extends object>
   extends MaterialTableProps<T> {
-  error: any;
   exportFileName: string;
 }
 

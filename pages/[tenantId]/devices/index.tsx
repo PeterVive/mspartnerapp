@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import { Typography } from "@mui/material";
+import { Typography, Alert, AlertTitle } from "@mui/material";
 import { setTenant } from "../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { Contract, Device } from "@microsoft/microsoft-graph-types-beta";
+import { Contract, ManagedDevice } from "@microsoft/microsoft-graph-types-beta";
 import DevicesTable from "../../../components/Table/DevicesTable";
 
 export default function Devices() {
@@ -42,7 +42,7 @@ export default function Devices() {
     }
   });
 
-  const { data: devices, error } = useSWR<Device[]>(
+  const { data: devices, error } = useSWR<ManagedDevice[]>(
     tenant ? `/api/tenants/${tenant.customerId}/devices` : null
   );
 
@@ -63,12 +63,22 @@ export default function Devices() {
           <title>{tenant.displayName} - devices</title>
           <meta
             property="og:title"
-            content={tenant.displayName + " devices"}
+            content={tenant.displayName + " Devices"}
             key="title"
           />
         </Head>
-        <DevicesTable devices={devices} tenant={tenant} error={error} />
+        <DevicesTable devices={devices} tenant={tenant} />
       </>
+    );
+  }
+
+  if (error?.message == "Request not applicable to target tenant.") {
+    return (
+      <Alert severity="error">
+        <AlertTitle>Error loading devices</AlertTitle>
+        This tenant does not have Microsoft Intune, and therefore cannot be
+        managed.
+      </Alert>
     );
   }
 
