@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { Contract, Domain } from "@microsoft/microsoft-graph-types-beta";
+import type { Contract, Domain } from "@microsoft/microsoft-graph-types-beta";
 import DomainsTable from "../../../components/Table/DomainsTable";
 
 export default function Users() {

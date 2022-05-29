@@ -6,8 +6,8 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { Mailbox } from "../../../utils/customGraphTypes";
-import { Contract } from "@microsoft/microsoft-graph-types-beta";
+import type { Mailbox } from "../../../utils/customGraphTypes";
+import type { Contract } from "@microsoft/microsoft-graph-types-beta";
 import MailboxesTable from "../../../components/Table/MailboxesTable";
 
 export default function Users() {

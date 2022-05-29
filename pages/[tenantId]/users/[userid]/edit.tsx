@@ -4,19 +4,17 @@ import { setTenant } from "../../../../features/tenantSlice";
 import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-
 import { useRouter } from "next/router";
-import _ from "lodash";
 import UserEdit from "../../../../components/UserEdit";
 import { useAppDispatch, useAppSelector } from "../../../../features/hooks";
-import { Domain, User } from "@microsoft/microsoft-graph-types-beta";
+import type { Domain, User } from "@microsoft/microsoft-graph-types-beta";
 
 export default function Users() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tenantId, userid } = router.query;
 
-  const { data: session, status } = useSession({
+  useSession({
     required: true,
   });
 

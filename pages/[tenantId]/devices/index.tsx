@@ -6,7 +6,10 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { Contract, ManagedDevice } from "@microsoft/microsoft-graph-types-beta";
+import type {
+  Contract,
+  ManagedDevice,
+} from "@microsoft/microsoft-graph-types-beta";
 import DevicesTable from "../../../components/Table/DevicesTable";
 
 export default function Devices() {

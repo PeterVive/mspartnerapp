@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { Group } from "@microsoft/microsoft-graph-types-beta";
+import type { Group } from "@microsoft/microsoft-graph-types-beta";
 import GroupsTable from "../../../components/Table/GroupsTable";
 
 type ExtendedGroup = Partial<Group> & { foundGroupType: string };

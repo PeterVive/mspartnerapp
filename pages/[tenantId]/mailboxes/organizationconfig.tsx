@@ -5,15 +5,15 @@ import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "../../../features/hooks";
-import { Contract } from "@microsoft/microsoft-graph-types-beta";
-import { OrganizationConfig } from "../../../utils/customGraphTypes";
+import type { Contract } from "@microsoft/microsoft-graph-types-beta";
+import type { OrganizationConfig } from "../../../utils/customGraphTypes";
 
 export default function OrganizationConfigPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tenantId } = router.query;
 
-  const { data: session, status } = useSession({
+  useSession({
     required: true,
   });
 
