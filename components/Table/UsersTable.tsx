@@ -1,7 +1,7 @@
 import type { Contract } from "@microsoft/microsoft-graph-types-beta";
 import { Check, Close, Edit } from "@mui/icons-material";
 import router from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { ExtendedUser } from "../../utils/customGraphTypes";
 import { getLicenseLookupObject } from "../../utils/licenseLookup";
 import CommonTable from "./CommonTable";
@@ -114,7 +114,7 @@ export default function UsersTable({ users, tenant }: UsersTableProps) {
     },
   ]);
 
-  useEffect(() => {
+  useMemo(() => {
     if (users) {
       // Fix various properties for proper table usage.
       users.forEach((user) => {

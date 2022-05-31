@@ -1,5 +1,5 @@
 import type { Contract } from "@microsoft/microsoft-graph-types-beta";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import type { ExtendedGroup } from "../../utils/customGraphTypes";
 import CommonTable from "./CommonTable";
 
@@ -25,7 +25,7 @@ export default function GroupTable({ groups, tenant }: GroupsTableProps) {
     },
   ]);
 
-  useEffect(() => {
+  useMemo(() => {
     if (groups) {
       groups.forEach((group) => {
         if (!group.foundGroupType) {

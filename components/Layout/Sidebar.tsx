@@ -9,6 +9,7 @@ import {
   ListItemIcon,
   ListItemText,
   Box,
+  Collapse,
 } from "@mui/material";
 import {
   Person,
@@ -17,16 +18,26 @@ import {
   Devices,
   Language,
   Engineering,
+  Summarize,
+  ExpandLess,
+  ExpandMore,
 } from "@mui/icons-material";
 import TenantSelect from "../TenantSelect";
 import Link from "../Link";
+import { useState } from "react";
 import { useAppSelector } from "../../features/hooks";
 import { useRouter } from "next/router";
 const drawerWidth = 350;
+import { Microsoftoutlook } from "@icons-pack/react-simple-icons";
 
 export default function Sidebar() {
-  const router = useRouter();
+  const [outlookReportTabOpen, setOutlookReportTabOpen] = useState(true);
 
+  const handleOutlookReportTabClick = () => {
+    setOutlookReportTabOpen(!outlookReportTabOpen);
+  };
+
+  const router = useRouter();
   const tenant = useAppSelector((state) => state.tenant.value);
 
   return (
@@ -197,6 +208,54 @@ export default function Sidebar() {
               </ListItemButton>
             </ListItem>
           </Link>
+        </List>
+        <Divider />
+        <List
+          sx={{ bgcolor: "background.paper" }}
+          subheader={
+            <ListSubheader component="div" id="reports-list-subheader">
+              Reports
+            </ListSubheader>
+          }
+        >
+          <ListItem disablePadding>
+            <ListItemButton
+              disabled={tenant ? false : true}
+              selected={router.pathname.endsWith("/reports/outlook")}
+              onClick={handleOutlookReportTabClick}
+            >
+              <ListItemIcon>
+                <Microsoftoutlook />
+              </ListItemIcon>
+              <ListItemText primary={"Outlook"} />
+              {outlookReportTabOpen ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+          </ListItem>
+
+          <Collapse in={outlookReportTabOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <Link
+                href={{
+                  pathname: "/[tenantId]/reports/outlook/desktopVersions",
+                  query: { tenantId: tenant?.customerId },
+                }}
+                style={{ textDecoration: "none" }}
+                color="inherit"
+              >
+                <ListItem disablePadding>
+                  <ListItemButton
+                    selected={router.pathname.endsWith(
+                      "/outlook/desktopVersions"
+                    )}
+                    sx={{ pl: 4 }}
+                    disabled={tenant ? false : true}
+                  >
+                    <ListItemText primary="Desktop Versions" />
+                  </ListItemButton>
+                </ListItem>
+              </Link>
+            </List>
+          </Collapse>
         </List>
       </Box>
     </Drawer>

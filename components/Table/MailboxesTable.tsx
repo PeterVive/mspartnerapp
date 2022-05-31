@@ -1,5 +1,5 @@
 import { Contract } from "@microsoft/microsoft-graph-types-beta";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Mailbox } from "../../utils/customGraphTypes";
 import CommonTable from "./CommonTable";
 
@@ -29,7 +29,7 @@ export default function MailboxesTable({
     },
   ]);
 
-  useEffect(() => {
+  useMemo(() => {
     if (mailboxes) {
       // Remove DiscoverySearchMailbox
       let filteredMailboxes = mailboxes.filter(
@@ -50,7 +50,7 @@ export default function MailboxesTable({
 
       setRows(filteredMailboxes);
     }
-  }, [mailboxes, columns]);
+  }, [mailboxes]);
 
   return (
     <CommonTable

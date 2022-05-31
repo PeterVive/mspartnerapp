@@ -1,6 +1,6 @@
 import type { Contract, Domain } from "@microsoft/microsoft-graph-types-beta";
 import { Check, Close } from "@mui/icons-material";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import CommonTable from "./CommonTable";
 
 type DomainsTableProps = {
@@ -23,11 +23,11 @@ export default function DomainsTable({ domains, tenant }: DomainsTableProps) {
     },
   ]);
 
-  useEffect(() => {
+  useMemo(() => {
     if (domains) {
       setRows(domains);
     }
-  }, [domains, columns]);
+  }, [domains]);
 
   return (
     <CommonTable

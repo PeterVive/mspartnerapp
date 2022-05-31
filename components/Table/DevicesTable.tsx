@@ -2,7 +2,7 @@ import type {
   Contract,
   ManagedDevice,
 } from "@microsoft/microsoft-graph-types-beta";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import CommonTable from "./CommonTable";
 
 type DevicesTableProps = {
@@ -31,7 +31,7 @@ export default function DevicesTable({ devices, tenant }: DevicesTableProps) {
     },
   ]);
 
-  useEffect(() => {
+  useMemo(() => {
     if (devices) {
       devices.forEach((device) => {
         // If undefined, means the device is just Azure AD registrered.
@@ -41,7 +41,7 @@ export default function DevicesTable({ devices, tenant }: DevicesTableProps) {
       });
       setRows(devices);
     }
-  }, [devices, columns]);
+  }, [devices]);
 
   return (
     <CommonTable
